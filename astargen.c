@@ -25,7 +25,7 @@ void a_push_state(struct state *s) {
       if (stat_open > stat_max_open)
 	stat_max_open=stat_open;
     }
-    statepq_insert(s, a_open);
+    a_open = statepq_insert(s, a_open);
     *sp = s;
     free_state(s0);
     return;

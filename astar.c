@@ -79,8 +79,10 @@ int a_star(void) {
   open = statepq_new();
   seen = stateht_new();
   push_state(start);
-  while (!statepq_isempty(open)) {
+  while (1) {
     open = statepq_delmin(open, &s);
+    if (!s)
+      break;
     if (verbose > 8) {
       printf("consider state\n");
       write_picture(s);

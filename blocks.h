@@ -9,13 +9,15 @@
 
 #define ON_CORRECT(S,B) ((S)->blocks[(B)].on == goal->blocks[(B)].on)
 
+typedef signed char t_block;
+
 struct block {
-  int on;
+  t_block on;
 };
 
 struct state {
   struct block *blocks;
-  int *tower_tops;
+  t_block *tower_tops;
   int n_towers;
   int h_score, g_score, t_score;   /* heuristic, real, total */
   int hash;
@@ -44,6 +46,7 @@ extern int timer_expired;
 /* misc.c */
 extern double cpu_secs(void);
 extern int getint(void);
+extern void set_timer(int);
 /* state.c */
 extern struct state *alloc_state(void);
 extern void free_state(struct state *);

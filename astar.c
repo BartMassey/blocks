@@ -4,20 +4,28 @@ static struct statepq *open;
 static struct stateht *seen;
 
 static void push_state(struct state *s) {
-  struct state *s0;
+  struct state **sp;
   
   /* deal with duplicates */
-  s0 = stateht_match(seen, s);
-  if (s0) {
-    if (!s0->q || s->g_score >= s0->g_score) {
+  sp = stateht_match(seen, s);
+  if (sp) {
+    struct state *s0 = *sp;
+    
+    if (s->g_score >= s0->g_score) {
       free_state (s);
       return;
     }
-    if (s->g_score < s0->g_score) {
+    if (s0->q) {
       statepq_delete(s0->q);
-      free(s0);
-      statepq_insert(s, open);
+    } else {
+      stat_open++;
+      if (stat_open > stat_max_open)
+	stat_max_open=stat_open;
     }
+    statepq_insert(s, open);
+    *sp = s;
+    free_state(s0);
+    return;
   }
   /* update stats */
   stat_cached++;

@@ -65,7 +65,12 @@ int main(int argc, char **argv) {
 	break;
       }
   read_problem();
-  score_state(start);
+  init_closure();
+  fix_bottoms(start);
+  if (fast_heuristic)
+    score_state(start);
+  else
+    deluxe_score_state(start);
   start->g_score = 0;
   start->t_score = start->h_score;
   hash_state(start);

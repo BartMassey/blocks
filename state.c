@@ -48,7 +48,7 @@ int is_same_state(struct state *s1, struct state *s2) {
    */
   if (s1->hash != s2->hash)
     return 0;
-  if (s1->n_towers != s2->n_towers || s1->h_score != s2->h_score)
+  if (s1->n_towers != s2->n_towers)
     return 0;
   for (i = 0; i < n_blocks; i++)
     if (s1->blocks[i].on != s2->blocks[i].on)

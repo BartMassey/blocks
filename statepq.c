@@ -13,18 +13,6 @@ struct statepq *statepq_new(void) {
   return 0;
 }
 
-/* Is the pq empty? */
-int statepq_isempty(struct statepq *t) {
-  return !t;
-}
-
-/* Extract the value component of a node. */
-struct state *statepq_val(struct statepq *t) {
-  if (!t)
-    abort();
-  return t->state;
-}
-
 static INLINE int score_lt(struct statepq *t1, struct statepq *t2) {
   struct state *s1 = t1->state;
   struct state *s2 = t2->state;
@@ -104,28 +92,36 @@ struct statepq *statepq_insert(struct state *s, struct statepq *t) {
   t0->rank = 1;
   t0->l = 0;
   t0->r = 0;
+  t0->deleted = 0;
   return meld(t, t0);
 }
 
-/* The minimum element of the heap */
-struct state *statepq_min(struct statepq *t) {
-  if (!t)
-    return 0;
-  return t->state;
+/*
+ * XXX lazy deletion:  Really only valid if you have a node,
+ * which you really shouldn't
+ */
+void statepq_delete(struct statepq *q) {
+  q->deleted = 1;
 }
 
 /*
- * Delete the minimum element and
- * merge its left and right children.
+ * Do any lazy deletions necessary,
+ * delete the minimum element,
+ * merge its left and right children,
+ * save the state associated with the minimum element,
+ * and return the altered pq.
  * Caller must dispose of state itself.
  */
-struct statepq *statepq_delmin(struct statepq *t) {
+struct statepq *statepq_delmin(struct statepq *t, struct state **sp) {
   struct statepq *t0;
   
   if (!t)
     abort();
+  while (t->deleted)
+    t = meld(t->l, t->r);
   t0 = t;
   t = meld(t->l, t->r);
+  *sp = t0->state;
   free(t0);
   return t;
 }

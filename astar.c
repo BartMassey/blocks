@@ -22,11 +22,11 @@ int a_star(void) {
       return 0;
     }
     --stat_open;
-    if (verbose > 1 && s->g_score > stat_max_g) {
+    if (verbose > 5 && s->g_score > stat_max_g) {
       stat_max_g = s->g_score;
       printf("g max now %d\n", stat_max_g);
     }
-    if (verbose > 1 && s->h_score < stat_min_h) {
+    if (verbose > 5 && s->h_score < stat_min_h) {
       stat_min_h = s->h_score;
       printf("h min now %d\n", stat_min_h);
     }

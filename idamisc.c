@@ -76,11 +76,18 @@ static void ida_answer(struct state *g, struct protect *p) {
     printf("%g secs\n", cpu_secs());
     printf("%d nodes\n",
 	   stat_nodes);
+    if (stat_decision_nodes >= 0)
+      printf("%d decision nodes\n", stat_decision_nodes);
     printf("%d heuristic, %d actual\n\n", start->h_score, g->g_score);
     ida_write_path(g, p);
   } else {
-    printf("%g %d %d %d\n",
-	   cpu_secs(), stat_nodes, 
-	   start->h_score, g->g_score);
+    if (stat_decision_nodes >= 0)
+      printf("%g %d %d %d %d\n",
+	     cpu_secs(), stat_nodes, stat_decision_nodes,
+	     start->h_score, g->g_score);
+    else
+      printf("%g %d %d %d\n",
+	     cpu_secs(), stat_nodes, 
+	     start->h_score, g->g_score);
   }
 }

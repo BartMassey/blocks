@@ -35,6 +35,7 @@ extern int stat_open;
 extern int stat_max_open;
 extern int stat_max_g;
 extern int stat_min_h;
+extern int stat_decision_nodes;
 /* control */
 extern int verbose;
 extern int ida;

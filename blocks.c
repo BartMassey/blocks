@@ -10,6 +10,7 @@ int stat_open = 1;
 int stat_max_open = 1;
 int stat_max_g = 0;
 int stat_min_h;
+int stat_decision_nodes = -1;
 /* control */
 int verbose = 0;
 int ida = 0;

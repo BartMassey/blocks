@@ -61,6 +61,7 @@ static int depth_first(struct state *s, int c, struct protect *pp) {
         backout_move(s, &p);
 	continue;
       }
+      stat_decision_nodes++;
       if (depth_first(s, c, &p))
 	return 1;
       backout_move(s, &p);
@@ -73,6 +74,7 @@ int rida_star(void) {
   int c = start->t_score;
   int i;
 
+  stat_decision_nodes = 0;
   for (i = c; i < 2 * c + 2; i++) {
     struct state *s = copy_state(start);
     if (depth_first(s, i, 0))

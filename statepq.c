@@ -3,20 +3,45 @@
 /*
  * Leftist Priority Queue
  * Bart Massey 5/95
- * C version 2/96
+ * C version 2/96, 7/96
  *
  * Ala Tarjan.
  */
+
+
+static struct statepq *mesh(struct statepq *t1, struct statepq *t2);
+static struct statepq *fixmesh(struct statepq *t);
+/* Merge the queues. */
+#define MELD(T1,T2) (fixmesh(mesh((T1),(T2))))
 
 /* Create a new pq. */
 struct statepq *statepq_new(void) {
   return 0;
 }
 
-static INLINE int score_lt(struct statepq *t1, struct statepq *t2) {
-  struct state *s1 = t1->state;
-  struct state *s2 = t2->state;
+/*
+ * Perform the lazy deletions, and return the queue
+ * with the first element undeleted
+ */
+static INLINE struct statepq *first(struct statepq *t) {
+  struct statepq *t0;
   
+  while (t && t->deleted) {
+    t0 = t;
+    t = MELD(t->l, t->r);
+    free(t0);
+  }
+  return t;
+}
+
+static INLINE int score_lt(struct statepq *t1, struct statepq *t2) {
+  struct state *s1;
+  struct state *s2;
+  
+  if (!t1 || !t2)
+    abort();
+  s1 = t1->state;
+  s2 = t2->state;
   if (s1->t_score < s2->t_score)
     return 1;
   if (s1->t_score == s2->t_score && s1->g_score > s2->g_score)
@@ -26,19 +51,18 @@ static INLINE int score_lt(struct statepq *t1, struct statepq *t2) {
 
 /* Merge the "right spines" of two pqs in order. */
 static struct statepq *mesh(struct statepq *t1, struct statepq *t2) {
-  struct statepq *tmp;
-  
+  t1 = first(t1);
+  t2 = first(t2);
   if (!t1)
     return t2;
   if (!t2)
     return t1;
-  if (score_lt(t2, t1)) {
-    tmp = t1;
-    t1 = t2;
-    t2 = tmp;
+  if (score_lt(t1, t2)) {
+    t1->r = mesh(t1->r, t2);
+    return t1;
   }
-  t1->r = mesh(t1->r, t2);
-  return t1;
+  t2->r = mesh(t2->r, t1);
+  return t2;
 }
 
 static INLINE int rank(struct statepq *t) {
@@ -54,27 +78,25 @@ static INLINE int rank(struct statepq *t) {
  */
 static struct statepq *fixmesh(struct statepq *t) {
   int rank_l, rank_r;
-  struct statepq *r;
+  struct statepq *l, *r;
   
+  t = first(t);
   if (!t)
     return 0;
-  rank_l = rank(t->l);
+  l = first(t->l);
   r = fixmesh(t->r);
+  rank_l = rank(l);
   rank_r = rank(r);
   if (rank_l < rank_r) {
     t->rank = rank_l + 1;
-    t->r = t->l;
+    t->r = l;
     t->l = r;
     return t;
   }
   t->rank = rank_r + 1;
+  t->l = l;
   t->r = r;
   return t;
-}
-
-/* Merge the queues. */
-static INLINE struct statepq *meld(struct statepq *t1, struct statepq *t2) {
-  return fixmesh(mesh(t1, t2));
 }
 
 /*
@@ -94,25 +116,13 @@ struct statepq *statepq_insert(struct state *s, struct statepq *t) {
   t0->r = 0;
   t0->deleted = 0;
   s->q = t0;
-  return meld(t, t0);
+  return MELD(t, t0);
 }
 
 /* lazy deletion */
 void statepq_delete(struct statepq *q) {
   q->deleted = 1;
   q->state->q = 0;
-}
-
-/* Performs the lazy deletions, and return the first undeleted element */
-static struct statepq *statepq_first(struct statepq *t) {
-  struct statepq *t0;
-  
-  while (t && t->deleted) {
-    t0 = t;
-    t = meld(t->l, t->r);
-    free(t0);
-  }
-  return t;
 }
 
 /*
@@ -126,20 +136,20 @@ static struct statepq *statepq_first(struct statepq *t) {
 struct statepq *statepq_delmin(struct statepq *t, struct state **sp) {
   struct statepq *t0;
   
-  t = statepq_first(t);
+  t = first(t);
   if (!t) {
     (*sp) = 0;
     return 0;
   }
   t0 = t;
-  t = meld(t->l, t->r);
+  t = MELD(t->l, t->r);
+  t0->state->q = 0;
   *sp = t0->state;
   free(t0);
-  (*sp)->q = 0;
   return t;
 }
 
 /* Merge the pqs. */
 struct statepq *statepq_merge(struct statepq *t1, struct statepq *t2) {
-  return meld(t1, t2);
+  return MELD(t1, t2);
 }

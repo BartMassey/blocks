@@ -1,6 +1,6 @@
 #include "blocks.h"
 
-struct state *alloc_state(void) {
+INLINE struct state *alloc_state(void) {
   struct state *new = malloc(sizeof(*new));
 
   if (!new) {
@@ -52,13 +52,23 @@ int is_same_state(struct state *s1, struct state *s2) {
 
 struct state *copy_state(struct state *parent) {
   struct state *new = alloc_state();
-  int i;
+#ifdef NO_MEMCPY
+  int i, n;
   
-  for (i = 0; i < n_blocks; i++)
+  n = n_blocks;
+  for (i = 0; i < n; i++)
     new->blocks[i] = parent->blocks[i];
-  new->n_towers = parent->n_towers;
-  for (i = 0; i < parent->n_towers; i++)
+  n = parent->n_towers;
+  for (i = 0; i < n; i++)
     new->tower_tops[i] = parent->tower_tops[i];
+#else
+  
+  memcpy(new->blocks, parent->blocks,
+	 n_blocks * sizeof(parent->blocks[0]));
+  memcpy(new->tower_tops, parent->tower_tops,
+	 parent->n_towers * sizeof(parent->tower_tops[0]));
+#endif
+  new->n_towers = parent->n_towers;
   new->g_score = parent->g_score;
   new->h_score = parent->h_score;
   new->t_score = parent->t_score;

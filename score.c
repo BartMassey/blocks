@@ -142,7 +142,7 @@ int score_towertop(struct state *s, int t) {
 
 void move(struct state *s, int t_from, int t_to) {
   int block, from, to;
-  int old_tt_score;
+  int old_tt_score = 0;  /* XXX init to hush gcc */
 
   /* debugging, checks, and stats */
   stat_nodes++;

@@ -4,7 +4,8 @@ CFLAGS=-g -Wall -Wno-implicit
 
 OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
 	rastar.o ridastar.o score.o state.o \
-	statepq.o stateht.o debug.o astargen.o idastargen.o
+	statepq.o stateht.o debug.o astargen.o idastargen.o \
+	checksoln.o
 
 all: blocks picture
 

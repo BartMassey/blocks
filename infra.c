@@ -1,6 +1,6 @@
 #include "blocks.h"
 
-static int hash(int i0, int i1) {
+static INLINE int hash(int i0, int i1) {
   return (i0 << 3) ^ (i0 << 24) ^ i1 ^ (i1 << 16);
 }
 

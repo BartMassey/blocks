@@ -23,12 +23,18 @@ INLINE struct state *alloc_state(void) {
     perror("malloc (new->tower_tops)");
     exit(-1);
   }
+  new->tower_bottoms = malloc(sizeof(new->tower_bottoms[0]) * n_blocks);
+  if (!new->tower_bottoms) {
+    perror("malloc (new->tower_bottoms)");
+    exit(-1);
+  }
   return new;
 }
 
 void free_state(struct state *s) {
   free(s->blocks);
   free(s->tower_tops);
+  free(s->tower_bottoms);
   free(s);
 }
 
@@ -61,12 +67,15 @@ struct state *copy_state(struct state *parent) {
   n = parent->n_towers;
   for (i = 0; i < n; i++)
     new->tower_tops[i] = parent->tower_tops[i];
+  for (i = 0; i < n; i++)
+    new->tower_bottoms[i] = parent->tower_bottoms[i];
 #else
-  
   memcpy(new->blocks, parent->blocks,
 	 n_blocks * sizeof(parent->blocks[0]));
   memcpy(new->tower_tops, parent->tower_tops,
 	 parent->n_towers * sizeof(parent->tower_tops[0]));
+  memcpy(new->tower_bottoms, parent->tower_bottoms,
+	 parent->n_towers * sizeof(parent->tower_bottoms[0]));
 #endif
   new->n_towers = parent->n_towers;
   new->g_score = parent->g_score;

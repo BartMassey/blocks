@@ -11,17 +11,18 @@ void hash_state(struct state *s) {
 
 static void fix_bottoms(struct state *s) {
   int i;
-  t_block b;
+  t_block b, lastbad;
   
   for (i = 0; i < s->n_towers; i++) {
+    lastbad = -1;
     for (b = s->tower_tops[i]; b != -1; b = s->blocks[b].on)
       if (!ON_CORRECT(s, b))
-	break;
-    if (b == -1) {
+	lastbad = b;
+    if (lastbad == -1) {
       s->tower_bottoms[i] = s->tower_tops[i];
       continue;
     }
-    s->tower_bottoms[i] = s->blocks[b].on;
+    s->tower_bottoms[i] = s->blocks[lastbad].on;
   }
 }
 	

@@ -6,24 +6,24 @@ void init_closure(void) {
     int n = n_blocks;
     int i, j, k;
 
-    aig = (char **) malloc(n_blocks);
+    aig = (char **) malloc(n * sizeof(aig[0]));
     if (!aig) {
 	perror("aig: malloc");
 	exit(-1);
     }
-    for(i = 0; i < n; i++) {
-	aig[i] = (char *) malloc(n_blocks);
+    for (i = 0; i < n; i++) {
+	aig[i] = (char *) malloc(n);
         if (!aig[i]) {
 	    perror("aig: malloc");
 	    exit(-1);
         }
-	for(j = 0; j < n; j++)
+	for (j = 0; j < n; j++)
 	    aig[i][j] = (goal->blocks[i].on == j);
     }
-    for(k = 0; k < n; k++)
-	for(i = 0; i < n; i++)
+    for (k = 0; k < n; k++)
+	for (i = 0; i < n; i++)
 	    if (aig[i][k])
-		for(j = 0; j < n; j++)
+		for (j = 0; j < n; j++)
 		    if (aig[k][j] && !aig[i][j])
 			aig[i][j] = 1;
 }
@@ -103,6 +103,15 @@ void deluxe_score_state(struct state *s) {
 }
 #endif
 
+void dumb_score_state(struct state *s) {
+  int i;
+  int t = n_blocks;
+
+  for(i = 0; i < n_blocks; i++)
+    t -= (s->blocks[i].on == goal->blocks[i].on);
+  s->h_score = t;
+}
+
 int score_towertop(struct state *s, int t) {
   int b;
   int bt = s->tower_tops[t];
@@ -134,10 +143,6 @@ void move(struct state *s, int t_from, int t_to) {
       printf("%g %d\n", cpu_secs(), -1);
     exit(-1);
   }
-  if (verbose > 8) {
-    printf("move %d to %d\n", t_from, t_to);
-    write_picture(s);
-  }
   /* get some invariants */
   if (t_from == -1)
     abort();
@@ -148,7 +153,15 @@ void move(struct state *s, int t_from, int t_to) {
   to = -1;
   if (t_to > -1)
     to = s->tower_tops[t_to];
-  if (fast_heuristic)
+  if (verbose > 8) {
+    printf("move block %d from tower %d onto block %d on tower %d\n",
+	   block, t_from, to, t_to);
+    write_picture(s);
+  }
+  /* do some initial scoring */
+  if (dumb_heuristic)
+    s->h_score += (from == goal->blocks[block].on);
+  else if (fast_heuristic)
     old_tt_score = score_towertop(s, t_from);
   /* fix up destination */
   s->hash += HASH(block, to) - HASH(block, s->blocks[block].on);
@@ -159,7 +172,7 @@ void move(struct state *s, int t_from, int t_to) {
     if (goal->blocks[block].on == tblock && s->tower_bottoms[t_to] == tblock)
       s->tower_bottoms[t_to] = block;
     s->tower_tops[t_to] = block;
-    if (fast_heuristic)
+    if (!dumb_heuristic && fast_heuristic)
       new_tt_score = score_towertop(s, t_to);
   } else {
     if (goal->blocks[block].on == -1)
@@ -168,7 +181,7 @@ void move(struct state *s, int t_from, int t_to) {
       s->tower_bottoms[s->n_towers] = -1;
     s->tower_tops[s->n_towers] = block;
     s->n_towers++;
-    if (fast_heuristic)
+    if (!dumb_heuristic && fast_heuristic)
       new_tt_score = score_towertop(s, s->n_towers - 1);
   }
   /* fix up source */
@@ -182,7 +195,9 @@ void move(struct state *s, int t_from, int t_to) {
     s->tower_bottoms[t_from] = s->tower_bottoms[s->n_towers];
   }
   /* finish the move */
-  if (fast_heuristic)
+  if (dumb_heuristic)
+    s->h_score -= (to == goal->blocks[block].on);
+  else if (fast_heuristic)
     s->h_score += new_tt_score - old_tt_score;
   else
     deluxe_score_state(s);
@@ -194,7 +209,8 @@ void move(struct state *s, int t_from, int t_to) {
   if (verbose > 8) {
     printf("\n");
     write_picture(s);
-    printf("moved %d to %d\n", t_from, t_to);
+    printf("moved block %d from tower %d onto block %d on tower %d\n",
+	   block, t_from, to, t_to);
   }
 }
 

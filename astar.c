@@ -81,6 +81,12 @@ int a_star(void) {
   push_state(start);
   while (!statepq_isempty(open)) {
     open = statepq_delmin(open, &s);
+    if (verbose > 8) {
+      printf("consider state\n");
+      write_picture(s);
+      if (verbose > 9)
+        printf("heuristic distance %d\n", s->h_score);
+    }
     if (same_state(s, goal)) {
       a_star_answer(s);
       return 0;

@@ -59,3 +59,16 @@ extern int a_star(void);
 extern int ida_star(void);
 /* ridastar.c */
 extern int rida_star(void);
+/* statepq.c */
+struct statepq {
+  struct state *state;
+  int rank;  
+  struct statepq *l, *r;
+};
+extern struct statepq *statepq_new(void);
+extern int statepq_isempty(struct statepq *);
+extern struct state *statepq_val(struct statepq *);
+extern struct statepq *statepq_insert(struct state *, struct statepq *);
+extern struct state *statepq_min(struct statepq *);
+extern struct statepq *statepq_delmin(struct statepq *);
+extern struct statepq *statepq_merge(struct statepq *, struct statepq *);

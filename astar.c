@@ -1,12 +1,13 @@
 #include "blocks.h"
 
-static struct state *open, *closed;
+static struct statepq *open;
+static struct state *closed = 0;
 
 static int duplicate_state(struct state *s, struct state *qs) {
   if (same_state(s, qs)) {
     if (s->g_score < qs->g_score) {
       /* copy relevant state for new path */
-      qs->g_score = s->g_score;
+      qs->g_score = s->g_score;  /* XXX reprioritize */
       qs->t_score = s->t_score;
       qs->moved_block = s->moved_block;
       qs->moved_to = s->moved_to;
@@ -18,31 +19,29 @@ static int duplicate_state(struct state *s, struct state *qs) {
   return 0;
 }
 
+/* XXX temporary hack */
+static int duplicate_in_open(struct statepq *q, struct state *s) {
+  return q && (duplicate_state(s, statepq_val(q))
+	       || duplicate_in_open(q->l, s)
+	       || duplicate_in_open(q->r, s));
+}
+
 static void push_state(struct state *s) {
-  struct state *qp, **qfp;
+  struct state *qp;
 
   /* deal with duplicates */
   for (qp = closed; qp; qp = qp->q_next)
     if (duplicate_state(s, qp))
       return;
-  for (qp = open; qp; qp = qp->q_next)
-    if (duplicate_state(s, qp))
-      return;
+  if (duplicate_in_open(open, s))
+    return;
   /* update stats */
   stat_cached++;
   stat_open++;
   if (stat_open > stat_max_open)
     stat_max_open=stat_open;
   /* insert in appropriate place */
-  qfp = &open;
-  for (qp = open; qp; qp = qp->q_next) {
-    if (qp->t_score > s->t_score ||
-	(qp->t_score == s->t_score && qp->h_score > s->h_score))
-      break;
-    qfp = &qp->q_next;
-  }
-  s->q_next = qp;
-  *qfp = s;
+  open = statepq_insert(s, open);
 }
 
 static void a_star_write_path(struct state *sp) {
@@ -84,14 +83,14 @@ int a_star(void) {
   struct state *s, *s0;
   int i, j;
 
+  open = statepq_new();
   push_state(start);
-  while (open) {
-    s = open;
+  while ((s = statepq_min(open))) {
     if (same_state(s, goal)) {
       a_star_answer(s);
       return 0;
     }
-    open = open->q_next;
+    open = statepq_delmin(open);
     --stat_open;
     if (verbose > 1 && s->g_score > stat_max_g) {
       stat_max_g = s->g_score;

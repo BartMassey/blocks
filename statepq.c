@@ -8,12 +8,6 @@
  * Ala Tarjan.
  */
 
-struct statepq {
-  struct state *state;
-  int rank;  
-  struct statepq *l, *r;
-};
-
 /* Create a new pq. */
 struct statepq *statepq_new(void) {
   return 0;

@@ -1,13 +1,13 @@
 #include "blocks.h"
 
 struct state *alloc_state(void) {
-  struct state *new = malloc(sizeof(struct state));
+  struct state *new = malloc(sizeof(*new));
 
   if (!new) {
     perror("malloc (new)");
     exit(-1);
   }
-  new->blocks = malloc(sizeof(struct block) * n_blocks);
+  new->blocks = malloc(sizeof(new->blocks[0]) * n_blocks);
   if (!new->blocks) {
     perror("malloc (new->blocks)");
     exit(-1);
@@ -18,7 +18,7 @@ struct state *alloc_state(void) {
    * for move(), which may want to start a new tower...
    * Punt for now.
    */
-  new->tower_tops = malloc(sizeof(int) * n_blocks);
+  new->tower_tops = malloc(sizeof(new->tower_tops[0]) * n_blocks);
   if (!new->tower_tops) {
     perror("malloc (new->tower_tops)");
     exit(-1);

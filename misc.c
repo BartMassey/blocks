@@ -3,6 +3,7 @@
 #include <signal.h>
 #include "blocks.h"
 extern int getrusage(int, struct rusage *);
+extern int setitimer(int, struct itimerval *, struct itimerval *);
 
 double cpu_secs(void) {
   struct rusage ru;

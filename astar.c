@@ -1,52 +1,32 @@
 #include "blocks.h"
 
 static struct statepq *open;
-static struct state *closed = 0;
-
-static struct statepq *stack[100000];
-static int duplicate_in_open(struct statepq *q, struct state *s) {
-  int sp = 0;
-  struct state *s0;
-
-  stack[sp++] = q;
-  while (sp) {
-    if (sp >= 100000)
-      abort();
-    q = stack[--sp];
-    while (q) {
-      if (same_state(s, (s0 = statepq_val(q)))) {
-	if (s->g_score < s0->g_score) {
-	  statepq_delete(q);
-	  free(s0);
-	  statepq_insert(s, open);
-	}
-        return 1;
-      }
-      stack[sp++] = q->r;
-      q = q->l;
-    }
-  }
-  return 0;
-}
+static struct stateht *seen;
 
 static void push_state(struct state *s) {
-  struct state *qp;
-
+  struct state *s0;
+  
   /* deal with duplicates */
-  for (qp = closed; qp; qp = qp->q_next)
-    if (same_state(s, qp)) {
+  s0 = stateht_match(seen, s);
+  if (s0) {
+    if (!s0->q || s->g_score >= s0->g_score) {
       free_state (s);
       return;
     }
-  if (duplicate_in_open(open, s))
-    return;
+    if (s->g_score < s0->g_score) {
+      statepq_delete(s0->q);
+      free(s0);
+      statepq_insert(s, open);
+    }
+  }
   /* update stats */
   stat_cached++;
   stat_open++;
   if (stat_open > stat_max_open)
     stat_max_open=stat_open;
-  /* insert in appropriate place */
+  /* insert in appropriate places */
   open = statepq_insert(s, open);
+  seen = stateht_insert(seen, s);
 }
 
 static void a_star_write_path(struct state *sp) {
@@ -89,6 +69,7 @@ int a_star(void) {
   int i, j;
 
   open = statepq_new();
+  seen = stateht_new();
   push_state(start);
   while (!statepq_isempty(open)) {
     open = statepq_delmin(open, &s);
@@ -105,8 +86,6 @@ int a_star(void) {
       stat_min_h = s->h_score;
       printf("h min now %d\n", stat_min_h);
     }
-    s->q_next = closed;
-    closed = s;
     /* try tabletop moves first */
     for (i = 0; i < s->n_towers; i++)
       if (s->blocks[s->tower_tops[i]].on > -1) {

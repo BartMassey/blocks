@@ -93,6 +93,7 @@ struct statepq *statepq_insert(struct state *s, struct statepq *t) {
   t0->l = 0;
   t0->r = 0;
   t0->deleted = 0;
+  s->q = t0;
   return meld(t, t0);
 }
 
@@ -102,6 +103,7 @@ struct statepq *statepq_insert(struct state *s, struct statepq *t) {
  */
 void statepq_delete(struct statepq *q) {
   q->deleted = 1;
+  q->state->q = 0;
 }
 
 /*
@@ -123,6 +125,7 @@ struct statepq *statepq_delmin(struct statepq *t, struct state **sp) {
   t = meld(t->l, t->r);
   *sp = t0->state;
   free(t0);
+  (*sp)->q = 0;
   return t;
 }
 

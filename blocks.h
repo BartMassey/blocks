@@ -18,11 +18,11 @@ struct state {
   int *tower_tops;
   int n_towers;
   int h_score, g_score, t_score;   /* heuristic, real, total */
+  int hash;
   /* used only by a_star() */
   struct state *parent;
   int moved_block, moved_to;
-  struct state *q_next;  /* XXX will be superceded */
-  int hash;
+  struct statepq *q;
 };
 
 /* global state */
@@ -81,3 +81,16 @@ extern struct statepq *statepq_insert(struct state *, struct statepq *);
 extern struct statepq *statepq_delmin(struct statepq *, struct state **);
 extern void statepq_delete(struct statepq *);
 extern struct statepq *statepq_merge(struct statepq *, struct statepq *);
+/* stateht.c */
+struct stateht_val {
+  struct state *s;
+  struct stateht_val *next;
+};
+struct stateht {
+  int h;
+  struct stateht_val *v;
+  struct stateht *l, *r;
+};
+extern struct stateht *stateht_new(void);
+extern struct stateht *stateht_insert(struct stateht *, struct state *);
+extern struct state *stateht_match(struct stateht *t, struct state *s);

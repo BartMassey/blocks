@@ -94,15 +94,34 @@ int ra_star(void) {
       stat_min_h = s->h_score;
       printf("h min now %d\n", stat_min_h);
     }
-    /* move any tower top onto a correct tower */
+    /* move any block not on the table which should be */
+    for (i = 0; i < s->n_towers; i++) {
+      int i0 = s->tower_tops[i];
+      
+      if (s->blocks[i0].on != -1 && goal->blocks[i0].on == -1) {
+	  s0 = copy_state(s);
+	  move(s0, i, -1);
+	  push_state(s0);
+	  goto next_state;
+      }
+    }
+    /* move any other must-move block into position */
     for (j = 0; j < s->n_towers; j++) {
+      int n = score_towertop(s, j);
       int j0;
       
+      /* must-move-twice blocks go to the table */
+      if (n == 2) {
+        s0 = copy_state(s);
+        move(s0, j, -1);
+        push_state(s0);
+        goto next_state;
+      }
       /* move only onto correct partial towers */
-      if (score_towertop(s, j))
+      if (n)
 	continue;
-      /* examine each towertop as from */
       j0 = s->tower_tops[j];
+      /* examine each towertop as from */
       for (i = 0; i < s->n_towers; i++)
 	if (i != j && j0 == goal->blocks[s->tower_tops[i]].on) {
 	  s0 = copy_state(s);
@@ -111,17 +130,10 @@ int ra_star(void) {
 	  goto next_state;
 	}
     }
-    /* move any must-move-twice block onto the table */
-    for (i = 0; i < s->n_towers; i++) {
-      /* move only onto correct partial towers */
-      if (score_towertop(s, i) != 2)
-	continue;
-      s0 = copy_state(s);
-      move(s0, i, -1);
-      push_state(s0);
-      goto next_state;
-    }
-    /* otherwise, try moving something which must move to the table. */
+    /*
+     * Otherwise, try moving something which must move to the table.
+     * Note that any tower top not on the table must move, here.
+     */
     for (i = 0; i < s->n_towers; i++) {
       if (s->blocks[s->tower_tops[i]].on == -1)
 	continue;

@@ -20,10 +20,21 @@ static int duplicate_state(struct state *s, struct state *qs) {
 }
 
 /* XXX temporary hack */
+static struct statepq *stack[100000];
 static int duplicate_in_open(struct statepq *q, struct state *s) {
-  return q && (duplicate_state(s, statepq_val(q))
-	       || duplicate_in_open(q->l, s)
-	       || duplicate_in_open(q->r, s));
+  int sp = 0;
+
+  stack[sp++] = q;
+  while (sp) {
+    q = stack[--sp];
+    while (q) {
+      if (duplicate_state(s, statepq_val(q)))
+        return 1;
+      stack[sp++] = q->l;
+      q = q->r;
+    }
+  }
+  return 0;
 }
 
 static void push_state(struct state *s) {

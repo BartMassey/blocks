@@ -4,7 +4,7 @@
 int getint(void) {
   char buf[128];
 
-  gets(buf);
+  fgets(buf, 128, stdin);
   return atoi(buf);
 }
 

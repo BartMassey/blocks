@@ -26,6 +26,19 @@ void init_closure(void) {
 		for (j = 0; j < n; j++)
 		    if (aig[k][j] && !aig[i][j])
 			aig[i][j] = 1;
+    if (verbose > 7) {
+        printf("aig:\n");
+	printf("  ");
+	for (i = 0; i < n_blocks; i++)
+	    printf(" %02d", i);
+	printf("\n");
+	for (i = 0; i < n_blocks; i++) {
+	    printf("%02d", i);
+	    for (j = 0; j < n_blocks; j++)
+		printf(" %01d ", aig[j][i]);
+	    printf("\n");
+	}
+    }
 }
 
 void score_state(struct state *s) {

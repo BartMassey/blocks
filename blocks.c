@@ -104,6 +104,12 @@ int main(int argc, char **argv) {
   goal->h_score = 0;   /* better be! */
   hash_state(goal);
   stat_min_h = start->h_score;
+  if (verbose > 2) {
+    printf("start state:\n");
+    write_picture(start);
+    printf("goal state:\n");
+    write_picture(goal);
+  }
   if (ida)
     return ida_star();
   if (rida)

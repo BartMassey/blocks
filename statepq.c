@@ -75,12 +75,12 @@ static struct statepq *fixmesh(struct statepq *t) {
   rank_r = rank(r);
   if (rank_l < rank_r) {
     t->rank = rank_l + 1;
-    t->r = r;
+    t->r = t->l;
+    t->l = r;
     return t;
   }
   t->rank = rank_r + 1;
-  t->r = t->l;
-  t->l = r;
+  t->r = r;
   return t;
 }
 

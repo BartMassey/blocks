@@ -3,35 +3,27 @@
 static struct statepq *open;
 static struct state *closed = 0;
 
-static int duplicate_state(struct state *s, struct state *qs) {
-  if (same_state(s, qs)) {
-    if (s->g_score < qs->g_score) {
-      /* copy relevant state for new path */
-      qs->g_score = s->g_score;  /* XXX reprioritize */
-      qs->t_score = s->t_score;
-      qs->moved_block = s->moved_block;
-      qs->moved_to = s->moved_to;
-      qs->parent = s->parent;
-    }
-    free_state (s);
-    return 1;
-  }
-  return 0;
-}
-
-/* XXX temporary hack */
 static struct statepq *stack[100000];
 static int duplicate_in_open(struct statepq *q, struct state *s) {
   int sp = 0;
+  struct state *s0;
 
   stack[sp++] = q;
   while (sp) {
+    if (sp >= 100000)
+      abort();
     q = stack[--sp];
     while (q) {
-      if (duplicate_state(s, statepq_val(q)))
+      if (same_state(s, (s0 = statepq_val(q)))) {
+	if (s->g_score < s0->g_score) {
+	  statepq_delete(q);
+	  free(s0);
+	  statepq_insert(s, open);
+	}
         return 1;
-      stack[sp++] = q->l;
-      q = q->r;
+      }
+      stack[sp++] = q->r;
+      q = q->l;
     }
   }
   return 0;
@@ -42,8 +34,10 @@ static void push_state(struct state *s) {
 
   /* deal with duplicates */
   for (qp = closed; qp; qp = qp->q_next)
-    if (duplicate_state(s, qp))
+    if (same_state(s, qp)) {
+      free_state (s);
       return;
+    }
   if (duplicate_in_open(open, s))
     return;
   /* update stats */
@@ -96,12 +90,12 @@ int a_star(void) {
 
   open = statepq_new();
   push_state(start);
-  while ((s = statepq_min(open))) {
+  while (!statepq_isempty(open)) {
+    open = statepq_delmin(open, &s);
     if (same_state(s, goal)) {
       a_star_answer(s);
       return 0;
     }
-    open = statepq_delmin(open);
     --stat_open;
     if (verbose > 1 && s->g_score > stat_max_g) {
       stat_max_g = s->g_score;

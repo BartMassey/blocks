@@ -75,6 +75,13 @@ void move(struct state *s, int t_from, int t_to) {
       printf("%g %d\n", cpu_secs(), -1);
     exit(-1);
   }
+  if (timer_expired) {
+    if (verbose > 0)
+      printf("Time limit exceeded after %g secs\n", cpu_secs());
+    else
+      printf("%g %d\n", cpu_secs(), -1);
+    exit(-1);
+  }
   /* get some invariants */
   if (t_from == -1)
     abort();

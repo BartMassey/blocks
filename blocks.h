@@ -38,8 +38,8 @@ extern int stat_min_h;
 extern int stat_decision_nodes;
 /* control */
 extern int verbose;
-extern int ida;
 extern int node_limit;
+extern int timer_expired;
 
 /* misc.c */
 extern double cpu_secs(void);

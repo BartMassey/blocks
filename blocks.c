@@ -13,11 +13,13 @@ int stat_min_h;
 int stat_decision_nodes = -1;
 /* control */
 int verbose = 0;
-int ida = 0;
-int rida = 0;
 int node_limit = 0;
+int timer_expired = 0;
 
 int main(int argc, char **argv) {
+  int ida = 0;
+  int rida = 0;
+
   argv++; argc--;
   while (argc > 0)
     if (argv[0][0] != '-')
@@ -34,6 +36,12 @@ int main(int argc, char **argv) {
 	if (argc < 2)
 	  abort();
 	node_limit = atoi(argv[1]);
+	argv += 2; argc -= 2;
+	break;
+      case 't':
+	if (argc < 2)
+	  abort();
+	set_timer(atoi(argv[1]));
 	argv += 2; argc -= 2;
 	break;
       case 'a':

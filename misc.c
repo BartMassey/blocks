@@ -1,5 +1,6 @@
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <signal.h>
 #include "blocks.h"
 extern int getrusage(int, struct rusage *);
 
@@ -19,4 +20,26 @@ int getint(void) {
 
   gets(buf);
   return atoi(buf);
+}
+
+/*ARGSUSED*/
+static void expired(int sig, int code, struct sigcontext *scp, void *addr) {
+  timer_expired = 1;
+}
+
+void set_timer(int sec) {
+  struct itimerval it, oit;
+
+  it.it_interval.tv_sec = 0;
+  it.it_interval.tv_usec = 0;
+  it.it_value.tv_sec = sec;
+  it.it_value.tv_usec = 0;
+  if (signal(SIGVTALRM, expired) == SIG_ERR) {
+    perror("signal");
+    exit(-1);
+  }
+  if (setitimer(ITIMER_VIRTUAL, &it, &oit) == -1) {
+    perror("setitimer");
+    exit(-1);
+  }
 }

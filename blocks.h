@@ -46,7 +46,9 @@ extern int getint(void);
 /* state.c */
 extern struct state *alloc_state(void);
 extern void free_state(struct state *);
-extern int same_state(struct state *, struct state *);
+#define same_state(S1,S2) \
+  (((S1)->hash == (S2)->hash) && is_same_state((S1),(S2)))
+extern int is_same_state(struct state *, struct state *);
 extern struct state *copy_state(struct state *);
 /* infra.c */
 extern void hash_state(struct state *);
@@ -63,15 +65,19 @@ extern int ida_star(void);
 /* ridastar.c */
 extern int rida_star(void);
 /* statepq.c */
+/* state structure */
 struct statepq {
   struct state *state;
   int rank;  
   struct statepq *l, *r;
+  int deleted;
 };
+/* Extract the value component of a node. */
+#define statepq_val(Q) ((Q)->state)
+/* Is the pq empty? */
+#define statepq_isempty(Q) (!(Q))
 extern struct statepq *statepq_new(void);
-extern int statepq_isempty(struct statepq *);
-extern struct state *statepq_val(struct statepq *);
 extern struct statepq *statepq_insert(struct state *, struct statepq *);
-extern struct state *statepq_min(struct statepq *);
-extern struct statepq *statepq_delmin(struct statepq *);
+extern struct statepq *statepq_delmin(struct statepq *, struct state **);
+extern void statepq_delete(struct statepq *);
 extern struct statepq *statepq_merge(struct statepq *, struct statepq *);

@@ -32,7 +32,7 @@ struct state {
 
 /* global state */
 extern int n_blocks;
-extern struct state *start, *goal;
+extern struct state *start, *saved_start, *goal;
 /* statistics */
 extern int stat_nodes;
 extern int stat_cached;
@@ -124,3 +124,5 @@ extern struct statepq *a_open;
 extern struct stateht *a_seen;
 extern void a_push_state(struct state *);
 extern void a_answer(struct state *);
+/* checksoln.c */
+extern void check_soln(int, int (*)[2]);

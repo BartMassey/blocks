@@ -2,7 +2,7 @@
 
 /* global state */
 int n_blocks;
-struct state *start, *goal;
+struct state *start, *saved_start, *goal;
 /* statistics */
 int stat_nodes = 1;
 int stat_cached = 1;
@@ -110,6 +110,7 @@ int main(int argc, char **argv) {
     printf("goal state:\n");
     write_picture(goal);
   }
+  saved_start = copy_state(start);
   if (ida)
     return ida_star();
   if (rida)

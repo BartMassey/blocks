@@ -15,6 +15,7 @@ int stat_decision_nodes = -1;
 int verbose = 0;
 int node_limit = 0;
 int timer_expired = 0;
+int fast_heuristic = 1;
 
 int main(int argc, char **argv) {
   int ida = 0;
@@ -58,9 +59,15 @@ int main(int argc, char **argv) {
 	  abort();
 	argv += 2; argc -= 2;
 	break;
+      case 'h':
+	fast_heuristic = 0;
+	argv++; argc--;
+	break;
       }
   read_problem();
-  score_state(start, 0);
+  score_state(start);
+  start->g_score = 0;
+  start->t_score = start->h_score;
   hash_state(start);
   start->parent = 0;
   start->moved_block = -1;

@@ -31,7 +31,7 @@ int above_correct(struct state *s, int b) {
   return 0;
 }
 
-void score_state(struct state *s, int g) {
+void score_state(struct state *s) {
   int h, i, btop, badb, b;
   
   h = 0;
@@ -46,9 +46,7 @@ void score_state(struct state *s, int g) {
     for (b = btop; b != s->blocks[badb].on; b = s->blocks[b].on)
       h += 1 + above_correct(s, b);
   }
-  s->g_score = g;
   s->h_score = h;
-  s->t_score = g + h;
 }
 
 int score_towertop(struct state *s, int t) {
@@ -92,16 +90,19 @@ void move(struct state *s, int t_from, int t_to) {
   to = -1;
   if (t_to > -1)
     to = s->tower_tops[t_to];
-  old_tt_score = score_towertop(s, t_from);
+  if (fast_heuristic)
+    old_tt_score = score_towertop(s, t_from);
   /* fix up destination */
   s->hash += hash(block, to) - hash(block, s->blocks[block].on);
   s->blocks[block].on = to;
   if (t_to > -1) {
     s->tower_tops[t_to] = block;
-    new_tt_score = score_towertop(s, t_to);
+    if (fast_heuristic)
+      new_tt_score = score_towertop(s, t_to);
   } else {
     s->tower_tops[s->n_towers++] = block;
-    new_tt_score = score_towertop(s, s->n_towers - 1);
+    if (fast_heuristic)
+      new_tt_score = score_towertop(s, s->n_towers - 1);
   }
   /* fix up source */
   if (from > -1)
@@ -109,8 +110,11 @@ void move(struct state *s, int t_from, int t_to) {
   else
     s->tower_tops[t_from] = s->tower_tops[--s->n_towers];
   /* finish the move */
+  if (fast_heuristic)
+    s->h_score += new_tt_score - old_tt_score;
+  else
+    score_state(s);
   s->g_score++;
-  s->h_score += new_tt_score - old_tt_score;
   s->t_score = s->g_score + s->h_score;
   s->moved_block = block;
   s->moved_to = to;

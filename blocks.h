@@ -42,6 +42,7 @@ extern int stat_decision_nodes;
 extern int verbose;
 extern int node_limit;
 extern int timer_expired;
+extern int fast_heuristic;
 
 /* misc.c */
 extern double cpu_secs(void);
@@ -57,7 +58,7 @@ extern struct state *copy_state(struct state *);
 /* infra.c */
 extern void hash_state(struct state *);
 extern int above_correct(struct state *, int);
-extern void score_state(struct state *, int);
+extern void score_state(struct state *);
 extern int score_towertop(struct state *s, int t);
 extern void move(struct state *, int, int);
 extern struct state *read_state(void);

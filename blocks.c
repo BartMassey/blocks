@@ -13,6 +13,7 @@ int stat_min_h;
 /* control */
 int verbose = 0;
 int ida = 0;
+int rida = 0;
 int node_limit = 0;
 
 int main(int argc, char **argv) {
@@ -39,8 +40,10 @@ int main(int argc, char **argv) {
 	  abort();
 	if (!strcmp(argv[1], "ida"))
 	  ida = 1;
+	else if (!strcmp(argv[1], "rida"))
+	  rida = 1;
 	else
-	  ida = 0;
+	  abort();
 	argv += 2; argc -= 2;
 	break;
       }
@@ -53,5 +56,7 @@ int main(int argc, char **argv) {
   stat_min_h = start->h_score;
   if (ida)
     return ida_star();
+  if (rida)
+    return rida_star();
   return a_star();
 }

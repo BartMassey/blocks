@@ -49,6 +49,7 @@ extern struct state *copy_state(struct state *);
 /* infra.c */
 extern int above_correct(struct state *, int);
 extern void score_state(struct state *, int);
+extern int score_towertop(struct state *s, int t);
 extern void move(struct state *, int, int);
 extern struct state *read_state(void);
 extern void read_problem(void);
@@ -56,3 +57,5 @@ extern void read_problem(void);
 extern int a_star(void);
 /* idastar.c */
 extern int ida_star(void);
+/* ridastar.c */
+extern int rida_star(void);

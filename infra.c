@@ -38,7 +38,7 @@ void score_state(struct state *s, int g) {
   s->t_score = g + h;
 }
 
-static int score_towertop(struct state *s, int t) {
+int score_towertop(struct state *s, int t) {
   int btop, b;
   
   btop = s->tower_tops[t];

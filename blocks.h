@@ -116,7 +116,7 @@ struct protect {
   int h_score, g_score, t_score;
   struct protect *parent;
   int hash;
-  int last_top, last_bottom;
+  int last_top, last_bottom, from_bottom, to_bottom;
 };
 extern void ida_answer(struct state *, struct protect *);
 /* astargen.c */

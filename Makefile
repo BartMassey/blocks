@@ -3,7 +3,8 @@ CFLAGS=-g -Wall -Wno-implicit
 #CFLAGS=-O4
 
 OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
-	rastar.o ridastar.o state.o statepq.o stateht.o
+	rastar.o ridastar.o score.o state.o \
+	statepq.o stateht.o debug.o astargen.o idastargen.o
 
 all: blocks picture
 
@@ -12,7 +13,11 @@ blocks: $(OBJS)
 
 $(OBJS): blocks.h
 
-idastar.o ridastar.o: idamisc.c
+idastar.o ridastar.o idastargen.o: idaprotect.c
+
+debug.o: writepicture.c
+
+picture.o: writepicture.c
 
 picture: picture.o
 	$(CC) $(CFLAGS) -o picture picture.o
@@ -25,3 +30,4 @@ realclean: clean
 
 install: blocks picture
 	/bin/cp blocks picture ../bin
+

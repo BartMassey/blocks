@@ -93,4 +93,4 @@ struct stateht {
 };
 extern struct stateht *stateht_new(void);
 extern struct stateht *stateht_insert(struct stateht *, struct state *);
-extern struct state *stateht_match(struct stateht *t, struct state *s);
+extern struct state **stateht_match(struct stateht *t, struct state *s);

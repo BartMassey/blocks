@@ -61,7 +61,7 @@ struct stateht *stateht_insert(struct stateht *t, struct state *s) {
   return t;
 }
 
-struct state *stateht_match(struct stateht *t, struct state *s) {
+struct state **stateht_match(struct stateht *t, struct state *s) {
   struct stateht_val *v;
   int h = s->hash;
 
@@ -76,7 +76,7 @@ struct state *stateht_match(struct stateht *t, struct state *s) {
     }
     for (v = t->v; v; v = v->next)
       if (same_state(v->s, s))
-	return v->s;
+	return &v->s;
     return 0;
   }
   return 0;

@@ -1,8 +1,8 @@
 CC=gcc
-# CFLAGS=-g -Wall -Wno-implicit
-CFLAGS=-O4
+CFLAGS=-g -Wall -Wno-implicit
+#CFLAGS=-O4
 
-OBJS = astar.o blocks.o idastar.o infra.o misc.o state.o
+OBJS = astar.o blocks.o idastar.o infra.o misc.o ridastar.o state.o statepq.o stateht.o
 
 all: blocks picture
 
@@ -11,8 +11,16 @@ blocks: $(OBJS)
 
 $(OBJS): blocks.h
 
+idastar.o ridastar.o: idamisc.c
+
 picture: picture.o
 	$(CC) $(CFLAGS) -o picture picture.o
 
 clean:
-	-rm -f $(OBJS) picture.o blocks picture
+	-/bin/rm -f $(OBJS) blocks
+
+realclean: clean
+	-/bin/rm -f picture.o picture
+
+install: blocks picture
+	/bin/cp blocks picture ../bin

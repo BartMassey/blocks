@@ -5,6 +5,7 @@ struct protect {
   int block, from, to;
   int h_score, g_score, t_score;
   struct protect *parent;
+  int hash;
   int last_top;
 };
 
@@ -14,6 +15,7 @@ static INLINE void global_protect_move(struct state *s, struct protect *p, struc
   p->t_score = s->t_score;
   p->parent = parent;
   p->n_towers = s->n_towers;
+  p->hash = s->hash;
 }
 
 static INLINE void local_protect_move(struct state *s, struct protect *p, int t_from, int t_to) {
@@ -40,6 +42,7 @@ static INLINE void backout_move(struct state *s, struct protect *p) {
   s->h_score = p->h_score;
   s->g_score = p->g_score;
   s->t_score = p->t_score;
+  s->hash = p->hash;
 }
 
 static void ida_write_path(struct state *s, struct protect *p) {

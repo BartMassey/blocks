@@ -35,6 +35,8 @@ void free_state(struct state *s) {
 int same_state(struct state *s1, struct state *s2) {
   int i;
   
+  if (s1->hash != s2->hash)
+    return 0;
   if (s1->n_towers != s2->n_towers || s1->h_score != s2->h_score)
     return 0;
   for (i = 0; i < n_blocks; i++)
@@ -55,6 +57,7 @@ struct state *copy_state(struct state *parent) {
   new->g_score = parent->g_score;
   new->h_score = parent->h_score;
   new->t_score = parent->t_score;
+  new->hash = parent->hash;
   new->parent = parent;
   return new;
 }

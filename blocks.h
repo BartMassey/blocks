@@ -18,9 +18,11 @@ struct state {
   int *tower_tops;
   int n_towers;
   int h_score, g_score, t_score;   /* heuristic, real, total */
+  /* used only by a_star() */
   struct state *parent;
   int moved_block, moved_to;
-  struct state *q_next;   /* used only by a_star() */
+  struct state *q_next;  /* XXX will be superceded */
+  int hash;
 };
 
 /* global state */
@@ -47,6 +49,7 @@ extern void free_state(struct state *);
 extern int same_state(struct state *, struct state *);
 extern struct state *copy_state(struct state *);
 /* infra.c */
+extern void hash_state(struct state *);
 extern int above_correct(struct state *, int);
 extern void score_state(struct state *, int);
 extern int score_towertop(struct state *s, int t);

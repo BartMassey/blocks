@@ -49,10 +49,12 @@ int main(int argc, char **argv) {
       }
   read_problem();
   score_state(start, 0);
+  hash_state(start);
   start->parent = 0;
   start->moved_block = -1;
   start->moved_to = -1;
   goal->h_score = 0;   /* better be! */
+  hash_state(goal);
   stat_min_h = start->h_score;
   if (ida)
     return ida_star();

@@ -1,5 +1,18 @@
 #include "blocks.h"
 
+static int hash(int i0, int i1) {
+  return (i0 << 3) ^ (i0 << 24) ^ i1 ^ (i1 << 16);
+}
+
+void hash_state(struct state *s) {
+  int h = 0;
+  int i;
+  
+  for (i = 0; i < n_blocks; i++)
+    h += hash(i, s->blocks[i].on);
+  s->hash = h;
+}
+
 /*
  * Returns true only if b is above some block bmatch
  * in both s and goal .
@@ -74,6 +87,7 @@ void move(struct state *s, int t_from, int t_to) {
     to = s->tower_tops[t_to];
   old_tt_score = score_towertop(s, t_from);
   /* fix up destination */
+  s->hash += hash(block, to) - hash(block, s->blocks[block].on);
   s->blocks[block].on = to;
   if (t_to > -1) {
     s->tower_tops[t_to] = block;

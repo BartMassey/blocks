@@ -59,7 +59,7 @@ void a_answer(struct state *g) {
     abort();
   if (verbose > 0) {
     printf("%g secs\n", cpu_secs());
-    printf("%d nodes, %d cached, %d max a_open\n",
+    printf("%d nodes, %d cached, %d max open\n",
 	   stat_nodes, stat_cached, stat_max_open);
     printf("%d heuristic, %d actual\n\n", start->h_score, g->g_score);
     write_path(g);

@@ -31,10 +31,10 @@ static int cheap_move(struct state *s, int block, int to) {
     t_to = s->n_towers++;
   s->tower_tops[t_to] = block;
   s->blocks[block].on = to;
-#if 0
-  printf("moved %d to %d\n", block, to);
-  write_picture(s);
-#endif
+  if (verbose > 2) {
+    printf("moved %d to %d\n", block, to);
+    write_picture(s);
+  }
   return 1;
 }
 

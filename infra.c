@@ -9,7 +9,23 @@ void hash_state(struct state *s) {
   s->hash = h;
 }
 
-struct state *read_state(void) {
+static void fix_bottoms(struct state *s) {
+  int i;
+  t_block b;
+  
+  for (i = 0; i < s->n_towers; i++) {
+    for (b = s->tower_tops[i]; b != -1; b = s->blocks[b].on)
+      if (!ON_CORRECT(s, b))
+	break;
+    if (b == -1) {
+      s->tower_bottoms[i] = s->tower_tops[i];
+      continue;
+    }
+    s->tower_bottoms[i] = s->blocks[b].on;
+  }
+}
+	
+static struct state *read_state(void) {
   struct state *new = alloc_state();
   int on, i, j;
 
@@ -44,22 +60,8 @@ void read_problem(void) {
   goal = read_state();
   if (getchar() != EOF)
     abort();
+  fix_bottoms(start);
+  fix_bottoms(goal);
 }
 
-void fix_bottoms(struct state *s) {
-  int i;
-  
-  for (i = 0; i < s->n_towers; i++) {
-    t_block b;
-    
-    for (b = s->tower_tops[i]; b != -1; b = s->blocks[b].on)
-      if (!ON_CORRECT(s, b))
-	break;
-    if (b == -1) {
-      s->tower_bottoms[i] = s->tower_tops[i];
-      continue;
-    }
-    s->tower_bottoms[i] = s->blocks[b].on;
-  }
-}
 

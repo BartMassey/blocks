@@ -1,7 +1,7 @@
 #include "blocks.h"
 
 static INLINE int hash(int i0, int i1) {
-  return (i0 << 3) ^ (i0 << 24) ^ i1 ^ (i1 << 16);
+  return ((i0 ^ i1) << 16) | (i0 << 8) | i1;
 }
 
 void hash_state(struct state *s) {

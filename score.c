@@ -58,57 +58,60 @@ void score_state(struct state *s) {
 }
 
 #if 0
-#define MARK_DEAD 1
-#define MARK_STACKED 2
-#define MARK_DONE 4
+
+int *marks = 0;
+
+static int delete_cycle(int i,
+			int nb,	struct state *s,
+			int *nnb, struct state **ns) {
+  for (i = 0; i < 
+}
+
+static int score_cycles(int nb, struct state *s) {
+  int nt = s->n_towers;
+  struct state *ns = 0;
+  int nnb;
+  
+  if (nb <= 0)
+    return 0;
+  for (i = 0; i < s->n_towers; i++)
+    if (delete_cycle(i, nb, s, &nnb, &ns))
+      break;
+  if (!ns)
+    return 0;
+  return 1 + score_cycles(nnb, ns);
+}
+			 
 void deluxe_score_state(struct state *s) {
-  int n = n_blocks;
-  static int *marks = 0;
+  int nb = n_blocks;
+  int nt = s->n_towers;
+  int h, i, j;
 
   if (!marks) {
-    marks = malloc(n * sizeof(marks[0]));
+    marks = malloc(nb * sizeof(marks[0]));
     if (!marks) {
 	perror("malloc: deluxe_score_state: marks");
 	exit(-1);
     }
   }
-  for (i = 0; i < n; i++)
+  for (i = 0; i < nb; i++)
     marks[i] = 0;
-  /*
-   * Delete bogus up and down edges.
-   * Count must-move blocks.
-   */
   h = 0;
-  for (i = 0; i < s->n_towers; i++) {
-    t_block b, bb;
-    t_block badb = -1;
+  for (i = 0; i < nt; i++) {
+    t_block b;
+    t_block bottom = s->tower_bottoms[i];
     
-    for (b = s->tower_tops[i]; b > -1; b = s->blocks[b].on)
-      if (!ON_CORRECT(s, b))
-	badb = b;
-    if (badb == -1)
-      continue;
-    bb = s->blocks[badb].on;
-    for (b = s->tower_tops[i]; b != bb; b = s->blocks[b].on)
+    for (b = s->tower_tops[i]; b != bottom; b = s->blocks[b].on)
       h++;
-    while (bb > -1) {
-      down_edges[bb] = -1;
-      b = s->blocks[bb].on;
-      if (b > -1)
-        up_edges[b] = -1;
-      bb = b;
-    }
   }
-  /* computer tower_tops[] hint */
-  for (i = 0; i < s->n_towers; i++) {
-    t_block b = s->tower_tops[i];
-    t_block bb = s->blocks[b].on;
+  for (i = 0; i < nt; i++) {
+    t_block b;
+    t_block bottom = s->tower_bottoms[i];
     
-    if (bb > -1 && up_edges[bb])
-      tower_tops[n_tops++] = b;
+    for (b = s->tower_tops[i]; b != bottom; b = s->blocks[b].on)
+      h++;
   }
-  /* set the score */
-  s->h_score = h + score_graph(n, up_edges, down_edges, n_tops, tower_tops);
+  s->h_score = h + score_cycles(nb, clone_state(s));
 }
 #else
 void deluxe_score_state(struct state *s) {

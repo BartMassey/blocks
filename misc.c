@@ -1,9 +1,8 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <signal.h>
+#include <unistd.h>
 #include "blocks.h"
-extern int getrusage(int, struct rusage *);
-extern int setitimer(int, struct itimerval *, struct itimerval *);
 
 double cpu_secs(void) {
   struct rusage ru;
@@ -19,12 +18,12 @@ double cpu_secs(void) {
 int getint(void) {
   char buf[128];
 
-  gets(buf);
+  fgets(buf, 128, stdin);
   return atoi(buf);
 }
 
 /*ARGSUSED*/
-static void expired(int sig, int code, struct sigcontext *scp, void *addr) {
+static void expired(int sig) {
   timer_expired = 1;
 }
 

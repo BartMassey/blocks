@@ -103,6 +103,18 @@ void statepq_delete(struct statepq *q) {
   q->state->q = 0;
 }
 
+/* Performs the lazy deletions, and return the first undeleted element */
+static struct statepq *statepq_first(struct statepq *t) {
+  struct statepq *t0;
+  
+  while (t && t->deleted) {
+    t0 = t;
+    t = meld(t->l, t->r);
+    free(t0);
+  }
+  return t;
+}
+
 /*
  * Do any lazy deletions necessary,
  * delete the minimum element,
@@ -114,10 +126,11 @@ void statepq_delete(struct statepq *q) {
 struct statepq *statepq_delmin(struct statepq *t, struct state **sp) {
   struct statepq *t0;
   
-  if (!t)
-    abort();
-  while (t->deleted)
-    t = meld(t->l, t->r);
+  t = statepq_first(t);
+  if (!t) {
+    (*sp) = 0;
+    return 0;
+  }
   t0 = t;
   t = meld(t->l, t->r);
   *sp = t0->state;

@@ -89,8 +89,6 @@ struct statepq {
 };
 /* Extract the value component of a node. */
 #define statepq_val(Q) ((Q)->state)
-/* Is the pq empty? */
-#define statepq_isempty(Q) (!(Q))
 extern struct statepq *statepq_new(void);
 extern struct statepq *statepq_insert(struct state *, struct statepq *);
 extern struct statepq *statepq_delmin(struct statepq *, struct state **);

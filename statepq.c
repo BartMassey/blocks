@@ -97,10 +97,7 @@ struct statepq *statepq_insert(struct state *s, struct statepq *t) {
   return meld(t, t0);
 }
 
-/*
- * XXX lazy deletion:  Really only valid if you have a node,
- * which you really shouldn't
- */
+/* lazy deletion */
 void statepq_delete(struct statepq *q) {
   q->deleted = 1;
   q->state->q = 0;

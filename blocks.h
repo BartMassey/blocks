@@ -15,9 +15,12 @@ struct block {
   t_block on;
 };
 
+#define HASH(I0,I1) ((((I0) ^ (I1)) << 16) | ((I0) << 8) | (I1))
+
 struct state {
   struct block *blocks;
   t_block *tower_tops;
+  t_block *tower_bottoms;
   int n_towers;
   int h_score, g_score, t_score;   /* heuristic, real, total */
   int hash;
@@ -55,14 +58,17 @@ extern void free_state(struct state *);
   (((S1)->hash == (S2)->hash) && is_same_state((S1),(S2)))
 extern int is_same_state(struct state *, struct state *);
 extern struct state *copy_state(struct state *);
+/* score.c */
+extern void init_closure(void);
+extern int score_towertop(struct state *s, int t);
+extern void score_state(struct state *);
+extern void deluxe_score_state(struct state *);
+extern void move(struct state *, int, int);
 /* infra.c */
 extern void hash_state(struct state *);
-extern int above_correct(struct state *, int);
-extern void score_state(struct state *);
-extern int score_towertop(struct state *s, int t);
-extern void move(struct state *, int, int);
 extern struct state *read_state(void);
 extern void read_problem(void);
+extern void fix_bottoms(struct state *);
 /* astar.c */
 extern int a_star(void);
 /* rastar.c */
@@ -101,3 +107,5 @@ struct stateht {
 extern struct stateht *stateht_new(void);
 extern struct stateht *stateht_insert(struct stateht *, struct state *);
 extern struct state **stateht_match(struct stateht *t, struct state *s);
+/* debug.c */
+extern void write_picture(struct state *);

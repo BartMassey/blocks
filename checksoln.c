@@ -20,15 +20,23 @@ static int cheap_move(struct state *s, int block, int to) {
   } else
     t_to = -1;
   from = s->blocks[block].on;
-  if (from > -1)
+  if (from > -1) {
+    if (s->tower_bottoms[t_from] == block)
+      s->tower_bottoms[t_from] = from;
     s->tower_tops[t_from] = from;
-  else {
-    s->tower_tops[t_from] = s->tower_tops[--s->n_towers];
+  } else {
+    --s->n_towers;
+    s->tower_tops[t_from] = s->tower_tops[s->n_towers];
+    s->tower_bottoms[t_from] = s->tower_bottoms[s->n_towers];
     if (t_to == s->n_towers)
       t_to = t_from;
   }
-  if (t_to == -1)
+  if (t_to == -1) {
     t_to = s->n_towers++;
+    s->tower_bottoms[t_to] = -1;
+  }
+  if (goal->blocks[block].on == to && s->tower_bottoms[t_to] == to)
+    s->tower_bottoms[t_to] = block;
   s->tower_tops[t_to] = block;
   s->blocks[block].on = to;
   if (verbose > 2) {
@@ -40,7 +48,7 @@ static int cheap_move(struct state *s, int block, int to) {
 
 void check_soln(int n_soln, int (*soln)[2]) {
   int i;
-  struct state *s = copy_state(saved_start);
+  struct state *s = clone_state(saved_start);
   
   for (i = 0; i < n_soln; i++)
     if (!cheap_move(s, soln[i][0], soln[i][1])) {

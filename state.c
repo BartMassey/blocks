@@ -56,33 +56,39 @@ int is_same_state(struct state *s1, struct state *s2) {
   return 1;
 }
 
-struct state *copy_state(struct state *parent) {
+INLINE struct state *clone_state(struct state *old) {
   struct state *new = alloc_state();
 #ifdef NO_MEMCPY
   int i, n;
   
   n = n_blocks;
   for (i = 0; i < n; i++)
-    new->blocks[i] = parent->blocks[i];
-  n = parent->n_towers;
+    new->blocks[i] = old->blocks[i];
+  n = old->n_towers;
   for (i = 0; i < n; i++)
-    new->tower_tops[i] = parent->tower_tops[i];
+    new->tower_tops[i] = old->tower_tops[i];
   for (i = 0; i < n; i++)
-    new->tower_bottoms[i] = parent->tower_bottoms[i];
+    new->tower_bottoms[i] = old->tower_bottoms[i];
 #else
-  memcpy(new->blocks, parent->blocks,
-	 n_blocks * sizeof(parent->blocks[0]));
-  memcpy(new->tower_tops, parent->tower_tops,
-	 parent->n_towers * sizeof(parent->tower_tops[0]));
-  memcpy(new->tower_bottoms, parent->tower_bottoms,
-	 parent->n_towers * sizeof(parent->tower_bottoms[0]));
+  memcpy(new->blocks, old->blocks,
+	 n_blocks * sizeof(old->blocks[0]));
+  memcpy(new->tower_tops, old->tower_tops,
+	 old->n_towers * sizeof(old->tower_tops[0]));
+  memcpy(new->tower_bottoms, old->tower_bottoms,
+	 old->n_towers * sizeof(old->tower_bottoms[0]));
 #endif
-  new->n_towers = parent->n_towers;
-  new->g_score = parent->g_score;
-  new->h_score = parent->h_score;
-  new->t_score = parent->t_score;
-  new->hash = parent->hash;
-  new->parent = parent;
+  new->n_towers = old->n_towers;
+  new->g_score = old->g_score;
+  new->h_score = old->h_score;
+  new->t_score = old->t_score;
+  new->hash = old->hash;
+  new->parent = old->parent;
   return new;
 }
     
+struct state *copy_state(struct state *parent) {
+  struct state *new = clone_state(parent);
+  
+  new->parent = parent;
+  return new;
+}

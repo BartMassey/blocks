@@ -63,20 +63,26 @@ void a_answer(struct state *g) {
   int n = length(g);
   
   /* print stats */
-  if (g->g_score != n)
-    abort();
   soln = malloc(n * sizeof(soln[0]));
   if (!soln) {
     perror("malloc: soln");
     exit(1);
   }
   save_path(g);
+  if (verbose > 3) {
+    printf("checking solution:\n");
+    write_picture(start);
+  }
+  check_soln(n_soln, soln);
+  if (g->g_score != n) {
+    printf("counted %d moves, recorded %d\n", g->g_score, n);
+    exit(1);
+  }
   if (verbose > 0) {
     printf("solution:\n");
     for(i = 0; i < n_soln; i++)
       printf("move block %d to block %d\n", soln[i][0], soln[i][1]);
   }
-  check_soln(n_soln, soln);
   if (verbose > 0) {
     printf("%g secs\n", cpu_secs());
     printf("%d nodes, %d cached, %d max open\n",

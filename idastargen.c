@@ -41,7 +41,7 @@ void ida_answer(struct state *g, struct protect *p) {
     perror("malloc: soln");
     exit(1);
   }
-  g0 = copy_state(g);
+  g0 = clone_state(g);
   save_path(g0, p);
   if (verbose > 0) {
     printf("solution:\n");

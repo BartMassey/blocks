@@ -139,8 +139,9 @@ int score_towertop(struct state *s, int t) {
 
 void move(struct state *s, int t_from, int t_to) {
   int block, from, to;
-  int old_tt_score, new_tt_score;
+  int old_tt_score;
 
+  /* debugging, checks, and stats */
   stat_nodes++;
   if (node_limit && stat_nodes > node_limit) {
     if (verbose > 0)
@@ -156,62 +157,57 @@ void move(struct state *s, int t_from, int t_to) {
       printf("%g %d\n", cpu_secs(), -1);
     exit(-1);
   }
-  /* get some invariants */
-  if (t_from == -1)
-    abort();
+  /* get some invariants, check some assertions */
   block = s->tower_tops[t_from];
   from = s->blocks[block].on;
+  if (t_from == -1)
+    abort();
   if (from == -1 && t_to == -1)
     abort();
-  to = -1;
+  if (t_to == t_from)
+    abort();
   if (t_to > -1)
     to = s->tower_tops[t_to];
+  else
+    to = -1;
+  /* more debugging, some scoring */
   if (verbose > 8) {
     printf("move block %d from tower %d onto block %d on tower %d\n",
 	   block, t_from, to, t_to);
     write_picture(s);
   }
-  /* do some initial scoring */
   if (dumb_heuristic)
     s->h_score += (from == goal->blocks[block].on);
   else if (fast_heuristic)
     old_tt_score = score_towertop(s, t_from);
-  /* fix up destination */
-  s->hash += HASH(block, to) - HASH(block, s->blocks[block].on);
-  s->blocks[block].on = to;
-  if (t_to > -1) {
-    int tblock = s->tower_tops[t_to];
-    
-    if (goal->blocks[block].on == tblock && s->tower_bottoms[t_to] == tblock)
-      s->tower_bottoms[t_to] = block;
-    s->tower_tops[t_to] = block;
-    if (!dumb_heuristic && fast_heuristic)
-      new_tt_score = score_towertop(s, t_to);
-  } else {
-    if (goal->blocks[block].on == -1)
-      s->tower_bottoms[s->n_towers] = block;
-    else
-      s->tower_bottoms[s->n_towers] = -1;
-    s->tower_tops[s->n_towers] = block;
-    s->n_towers++;
-    if (!dumb_heuristic && fast_heuristic)
-      new_tt_score = score_towertop(s, s->n_towers - 1);
-  }
-  /* fix up source */
+  /* fix up source tower */
   if (from > -1) {
-    if (s->tower_tops[t_from] == s->tower_bottoms[t_from])
+    if (s->tower_bottoms[t_from] == block)
       s->tower_bottoms[t_from] = from;
     s->tower_tops[t_from] = from;
   } else {
     --s->n_towers;
     s->tower_tops[t_from] = s->tower_tops[s->n_towers];
     s->tower_bottoms[t_from] = s->tower_bottoms[s->n_towers];
+    if (t_to == s->n_towers)
+      t_to = t_from;
   }
+  /* fix up destination tower */
+  if (t_to == -1) {
+    t_to = s->n_towers++;
+    s->tower_bottoms[t_to] = -1;
+  }
+  if (goal->blocks[block].on == to && s->tower_bottoms[t_to] == to)
+    s->tower_bottoms[t_to] = block;
+  s->tower_tops[t_to] = block;
   /* finish the move */
+  s->hash += HASH(block, to) - HASH(block, s->blocks[block].on);
+  s->blocks[block].on = to;
+  /* more scoring, statistics */
   if (dumb_heuristic)
     s->h_score -= (to == goal->blocks[block].on);
   else if (fast_heuristic)
-    s->h_score += new_tt_score - old_tt_score;
+    s->h_score += score_towertop(s, t_to) - old_tt_score;
   else
     deluxe_score_state(s);
   s->g_score++;

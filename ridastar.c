@@ -79,7 +79,7 @@ int rida_star(void) {
 
   stat_decision_nodes = 0;
   for (i = c; i < 2 * c + 2; i++) {
-    struct state *s = copy_state(start);
+    struct state *s = clone_state(start);
     if (depth_first(s, i, 0))
       return 0;
     free_state(s);

@@ -58,6 +58,7 @@ extern void free_state(struct state *);
 #define same_state(S1,S2) \
   (((S1)->hash == (S2)->hash) && is_same_state((S1),(S2)))
 extern int is_same_state(struct state *, struct state *);
+extern struct state *clone_state(struct state *);
 extern struct state *copy_state(struct state *);
 /* score.c */
 extern void init_closure(void);

@@ -61,6 +61,8 @@ extern struct state *read_state(void);
 extern void read_problem(void);
 /* astar.c */
 extern int a_star(void);
+/* rastar.c */
+extern int ra_star(void);
 /* idastar.c */
 extern int ida_star(void);
 /* ridastar.c */

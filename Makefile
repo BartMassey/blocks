@@ -2,7 +2,8 @@ CC=gcc
 CFLAGS=-g -Wall -Wno-implicit
 #CFLAGS=-O4
 
-OBJS = astar.o blocks.o idastar.o infra.o misc.o ridastar.o state.o statepq.o stateht.o
+OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
+	rastar.o ridastar.o state.o statepq.o stateht.o
 
 all: blocks picture
 

@@ -19,6 +19,7 @@ int timer_expired = 0;
 int main(int argc, char **argv) {
   int ida = 0;
   int rida = 0;
+  int ra = 0;
 
   argv++; argc--;
   while (argc > 0)
@@ -51,6 +52,8 @@ int main(int argc, char **argv) {
 	  ida = 1;
 	else if (!strcmp(argv[1], "rida"))
 	  rida = 1;
+	else if (!strcmp(argv[1], "ra"))
+	  ra = 1;
 	else
 	  abort();
 	argv += 2; argc -= 2;
@@ -69,5 +72,7 @@ int main(int argc, char **argv) {
     return ida_star();
   if (rida)
     return rida_star();
+  if (ra)
+    return ra_star();
   return a_star();
 }

@@ -24,11 +24,11 @@ int main(int argc, char **argv) {
   int ra = 0;
 
   argv++; argc--;
-  while (argc > 0)
+  while (argc > 0) {
     if (argv[0][0] != '-') {
       fprintf(stderr, "blocks: - expected\n");
       exit(1);
-    } else
+    } else {
       switch (argv[0][1]) {
       case 'v':
 	if (argc < 2) {
@@ -71,9 +71,9 @@ int main(int argc, char **argv) {
 	}
 	argv += 2; argc -= 2;
 	break;
-      case 'h':
+      case 'x':
 	if (argc < 2) {
-	  fprintf(stderr, "blocks: -h: argument expected\n");
+	  fprintf(stderr, "blocks: -x: argument expected\n");
 	  exit(1);
 	}
 	if (!strcmp(argv[1], "slow"))
@@ -81,12 +81,19 @@ int main(int argc, char **argv) {
 	else if(!strcmp(argv[1], "dumb"))
 	  dumb_heuristic = 1;
 	else {
-	  fprintf(stderr, "blocks: -h: unknown heuristic %s\n", argv[1]);
+	  fprintf(stderr, "blocks: -x: unknown heuristic %s\n", argv[1]);
 	  exit(1);
 	}
 	argv += 2; argc -= 2;
 	break;
+      default:
+	fprintf(stderr, "blocks: usage: blocks [-v <verbosity>] "
+		        "[-l <nodelimit>] [-a rastar|ida|idastar] "
+		        "[-x slow|dumb] [-h]\n");
+	exit(1);
       }
+    }
+  }
   read_problem();
   init_closure();
   if (dumb_heuristic)

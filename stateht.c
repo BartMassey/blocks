@@ -35,7 +35,7 @@ struct stateht *stateht_insert(struct stateht *t, struct state *s) {
       t1 = t1->l;
       continue;
     }
-    if (h < t1->h) {
+    if (h > t1->h) {
       t1 = t1->r;
       continue;
     }
@@ -70,7 +70,7 @@ struct state *stateht_match(struct stateht *t, struct state *s) {
       t = t->l;
       continue;
     }
-    if (h < t->h) {
+    if (h > t->h) {
       t = t->r;
       continue;
     }

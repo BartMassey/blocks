@@ -68,9 +68,7 @@ extern void dumb_score_state(struct state *);
 extern void move(struct state *, int, int);
 /* infra.c */
 extern void hash_state(struct state *);
-extern struct state *read_state(void);
 extern void read_problem(void);
-extern void fix_bottoms(struct state *);
 /* astar.c */
 extern int a_star(void);
 /* rastar.c */
@@ -109,3 +107,20 @@ extern struct stateht *stateht_insert(struct stateht *, struct state *);
 extern struct state **stateht_match(struct stateht *t, struct state *s);
 /* debug.c */
 extern void write_picture(struct state *);
+/* idastargen.c */
+/* for do-undo move buffering (for depth_first()) */
+struct protect {
+  int t_from, t_to;
+  int n_towers;
+  int block, from, to;
+  int h_score, g_score, t_score;
+  struct protect *parent;
+  int hash;
+  int last_top, last_bottom;
+};
+extern void ida_answer(struct state *, struct protect *);
+/* astargen.c */
+extern struct statepq *a_open;
+extern struct stateht *a_seen;
+extern void a_push_state(struct state *);
+extern void a_answer(struct state *);

@@ -1,5 +1,5 @@
 #include "blocks.h"
-#include "idamisc.c"
+#include "idaprotect.c"
 
 static int depth_first(struct state *s, int c, struct protect *pp) {
   struct protect p;

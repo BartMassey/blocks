@@ -89,7 +89,6 @@ int main(int argc, char **argv) {
       }
   read_problem();
   init_closure();
-  fix_bottoms(start);
   if (dumb_heuristic)
     dumb_score_state(start);
   else if (fast_heuristic)

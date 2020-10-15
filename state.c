@@ -1,4 +1,7 @@
 #include "blocks.h"
+#ifndef NO_MEMCPY
+#include <string.h>
+#endif
 
 INLINE struct state *alloc_state(void) {
   struct state *new = malloc(sizeof(*new));

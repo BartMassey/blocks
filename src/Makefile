@@ -1,5 +1,11 @@
-CC=gcc
-CFLAGS=-O4 -Wall
+CC=clang
+CFLAGS=-O3 -Wall
+CLANG_ANALYZE = clang --analyzer-output plist-multi-file --analyze
+
+SRCS =	astar.c blocks.c idastar.c infra.c misc.c \
+	rastar.c ridastar.c score.c state.c \
+	statepq.c stateht.c debug.c astargen.c idastargen.c \
+	checksoln.c
 
 OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
 	rastar.o ridastar.o score.o state.o \
@@ -23,8 +29,10 @@ picture: picture.o
 	$(CC) $(CFLAGS) -o picture picture.o
 
 clean:
-	-/bin/rm -f $(OBJS) blocks picture.o picture
+	-/bin/rm -f $(OBJS) blocks picture.o picture *.plist
 
 install: blocks picture
 	/bin/cp blocks picture ../bin
 
+analyze:
+	$(CLANG_ANALYZE) $(SRCS)

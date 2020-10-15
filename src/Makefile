@@ -1,6 +1,5 @@
 CC=gcc
-CFLAGS=-g -O4 -Wall -Wno-implicit
-#CFLAGS=-O4
+CFLAGS=-O4 -Wall
 
 OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
 	rastar.o ridastar.o score.o state.o \

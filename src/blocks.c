@@ -1,4 +1,5 @@
 #include "blocks.h"
+#include <string.h>
 
 /* global state */
 int n_blocks;

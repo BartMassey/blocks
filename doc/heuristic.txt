@@ -1,0 +1,7 @@
+A block "has to move" if
+  1) it is on the wrong thing, or
+  2) if a block below it has to move.
+A block "has to move twice" if
+  1) it is above a block, and
+  2) it is supposed to be above that block, and
+  3) it has to move

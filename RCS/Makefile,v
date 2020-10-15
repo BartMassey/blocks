@@ -1,0 +1,154 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.6
+date	2003.05.21.09.34.06;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.07.17.02.06.14;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.07.16.02.01.35;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.09.02.35.17;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.06.02.13.09;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@Makefile for blocks
+@
+
+
+1.6
+log
+@might as well optimize
+@
+text
+@CC=gcc
+CFLAGS=-g -O4 -Wall -Wno-implicit
+#CFLAGS=-O4
+
+OBJS =	astar.o blocks.o idastar.o infra.o misc.o \
+	rastar.o ridastar.o score.o state.o \
+	statepq.o stateht.o debug.o astargen.o idastargen.o \
+	checksoln.o
+
+all: blocks picture
+
+blocks: $(OBJS)
+	$(CC) $(CFLAGS) -o blocks $(OBJS)
+
+$(OBJS): blocks.h
+
+idastar.o ridastar.o idastargen.o: idaprotect.c
+
+debug.o: writepicture.c
+
+picture.o: writepicture.c
+
+picture: picture.o
+	$(CC) $(CFLAGS) -o picture picture.o
+
+clean:
+	-/bin/rm -f $(OBJS) blocks picture.o picture
+
+install: blocks picture
+	/bin/cp blocks picture ../bin
+
+@
+
+
+1.5
+log
+@add checksoln
+@
+text
+@d2 1
+a2 1
+CFLAGS=-g -Wall -Wno-implicit
+d27 1
+a27 4
+	-/bin/rm -f $(OBJS) blocks
+
+realclean: clean
+	-/bin/rm -f picture.o picture
+@
+
+
+1.4
+log
+@code restructuring
+@
+text
+@d7 2
+a8 1
+	statepq.o stateht.o debug.o astargen.o idastargen.o
+@
+
+
+1.3
+log
+@fixes for rastar
+@
+text
+@d6 2
+a7 1
+	rastar.o ridastar.o state.o statepq.o stateht.o
+d16 5
+a20 1
+idastar.o ridastar.o: idamisc.c
+d33 1
+@
+
+
+1.2
+log
+@added more sources
+added more targets
+@
+text
+@d5 2
+a6 1
+OBJS = astar.o blocks.o idastar.o infra.o misc.o ridastar.o state.o statepq.o stateht.o
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d2 2
+a3 2
+# CFLAGS=-g -Wall -Wno-implicit
+CFLAGS=-O4
+d5 1
+a5 1
+OBJS = astar.o blocks.o idastar.o infra.o misc.o state.o
+d14 2
+d20 7
+a26 1
+	-rm -f $(OBJS) picture.o blocks picture
+@

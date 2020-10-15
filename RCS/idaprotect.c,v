@@ -1,0 +1,118 @@
+head	1.2;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.2
+date	96.07.17.00.27.35;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@protect/unprotect for ida variants
+@
+
+
+1.2
+log
+@some fixes for tower_bottoms
+@
+text
+@#ifdef PROTECT 
+
+static INLINE void global_protect_move(struct state *s, struct protect *p, struct protect *parent) {
+  p->h_score = s->h_score;
+  p->g_score = s->g_score;
+  p->t_score = s->t_score;
+  p->parent = parent;
+  p->n_towers = s->n_towers;
+  p->hash = s->hash;
+}
+
+static INLINE void local_protect_move(struct state *s, struct protect *p, int t_from, int t_to) {
+  p->t_from = t_from;
+  p->t_to = t_to;
+  if (t_to > -1) {
+    p->to = s->tower_tops[t_to];
+    p->to_bottom = s->tower_bottoms[t_to];
+  } else {
+    p->to = -1;
+  }
+  p->block = s->tower_tops[t_from];
+  p->from = s->blocks[p->block].on;
+  p->from_bottom = s->tower_bottoms[t_from];
+  if (p->from == -1) {
+    p->last_bottom = s->tower_bottoms[s->n_towers - 1];
+    p->last_top = s->tower_tops[s->n_towers - 1];
+  }
+}
+
+#endif
+
+static INLINE void backout_move(struct state *s, struct protect *p) {
+  s->n_towers = p->n_towers;
+  if (p->t_to > -1) {
+    s->tower_tops[p->t_to] = p->to;
+    s->tower_bottoms[p->t_to] = p->to_bottom;
+  }
+  if (p->from == -1) {
+    s->tower_tops[s->n_towers - 1] = p->last_top;
+    s->tower_bottoms[s->n_towers - 1] = p->last_bottom;
+  }
+  s->tower_tops[p->t_from] = p->block;
+  s->blocks[p->block].on = p->from;
+  s->tower_bottoms[p->t_from] = p->from_bottom;
+  s->h_score = p->h_score;
+  s->g_score = p->g_score;
+  s->t_score = p->t_score;
+  s->hash = p->hash;
+}
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+d15 1
+a15 2
+  p->block = s->tower_tops[t_from];
+  if (t_to > -1)
+d17 2
+a18 1
+  else
+d20 2
+d23 3
+a25 3
+  if (p->from > -1) {
+    p->last_bottom = s->tower_bottoms[p->t_from];
+  } else {
+a26 1
+    p->last_bottom = s->tower_bottoms[s->n_towers - 1];
+d30 2
+a33 1
+  s->tower_tops[p->t_from] = p->block;
+d36 1
+a36 2
+    if (s->tower_bottoms[p->t_to] == p->block)
+      s->tower_bottoms[p->t_to] = p->to;
+d38 1
+a38 3
+  if (p->from > -1) {
+    s->tower_bottoms[p->t_from] = p->last_bottom;
+  } else {
+d42 1
+d44 1
+a49 1
+
+@

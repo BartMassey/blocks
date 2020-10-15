@@ -1,0 +1,141 @@
+
+[wrigley:513] g++ -DBUFF=5 -DBHEAP -DDEBUG_MAIN B-main.cc
+
+leads to output:
+
+shuffling_seed 800502645
+Using binomial heap
+After insertion of 3 the heap state is now 
+m3(0)
+After insertion of 4 the heap state is now 
+m3(1)
+      m4(0)
+After insertion of 2 the heap state is now 
+m2(0)
+3(1)
+      m4(0)
+After insertion of 1 the heap state is now 
+m1(2)
+      2(0)
+      3(1)
+            m4(0)
+After insertion of 0 the heap state is now 
+m0(0)
+1(2)
+      2(0)
+      3(1)
+            m4(0)
+insertions finished
+seconds_taken_so_far 0.015338
+The heap state is now 
+m0(0)
+1(2)
+      2(0)
+      3(1)
+            m4(0)
+Starting the deletemin's 
+deletemin returned 0
+The heap state is now  
+m1(2)
+      2(0)
+      3(1)
+            m4(0)
+deletemin returned 1
+The heap state is now  
+m2(0)
+3(1)
+      m4(0)
+deletemin returned 2
+The heap state is now  
+m3(1)
+      m4(0)
+deletemin returned 3
+The heap state is now  
+m4(0)
+deletemin returned 4
+The heap state is now  
+Sorted numbers (or just the errors):
+entries_sorted 5
+seconds_taken 0.029234
+
+
+Fibonacci Heap
+=============
+
+[wrigley:513] g++ -DDEBUG_MAIN -DBUFF=6 -DLOG_BUFF=10 B-main.cc
+B-main.cc: In function `int main()':
+B-main.cc:87: warning: implicit declaration of function `int gettimeofday(...)'
+
+[wrigley:513] a.out >> heap-test-results
+
+gives the output:
+
+shuffling_seed 800521071
+Using Fibonacci heap
+After insertion of 0 the heap state is now 
+m0(0)
+After insertion of 3 the heap state is now 
+3(0)
+m0(0)
+After insertion of 4 the heap state is now 
+4(0)
+3(0)
+m0(0)
+After insertion of 1 the heap state is now 
+1(0)
+4(0)
+3(0)
+m0(0)
+After insertion of 2 the heap state is now 
+2(0)
+1(0)
+4(0)
+3(0)
+m0(0)
+After insertion of 5 the heap state is now 
+5(0)
+2(0)
+1(0)
+4(0)
+3(0)
+m0(0)
+insertions finished
+seconds_taken_so_far 0.973704
+The heap state is now 
+5(0)
+2(0)
+1(0)
+4(0)
+3(0)
+m0(0)
+Starting the deletemin's 
+deletemin returned 0
+The heap state is now  
+3(0)
+m1(2)
+      4(0)
+      2(1)
+            m5(0)
+deletemin returned 1
+The heap state is now  
+m2(2)
+      5(0)
+      3(1)
+            m4(0)
+deletemin returned 2
+The heap state is now  
+5(0)
+m3(1)
+      m4(0)
+deletemin returned 3
+The heap state is now  
+m4(1)
+      m5(0)
+deletemin returned 4
+The heap state is now  
+m5(0)
+deletemin returned 5
+The heap state is now  
+Sorted numbers (or just the errors):
+entries_sorted 6
+seconds_taken 2.17102

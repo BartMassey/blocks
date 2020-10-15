@@ -1,0 +1,68 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	2003.05.21.09.09.04;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.07.12.17.36.42;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@stdlib.h for blocks
+@
+
+
+1.3
+log
+@bring to 2003
+@
+text
+@#include <stdlib.h>
+#include <unistd.h>
+@
+
+
+1.2
+log
+@fixed for acc
+@
+text
+@d1 2
+a2 10
+extern void *malloc(unsigned);
+extern void free(void *);
+#ifdef __GNUC__
+extern void perror(char *);
+extern void printf(char *, ...);
+extern void fprintf(FILE *, char *, ...);
+#else
+extern int strcmp(char *, char *);
+#endif
+extern int atoi(char *);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+d7 1
+a7 1
+#ifndef __GNUC__
+@

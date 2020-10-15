@@ -1,0 +1,131 @@
+Binomial Heaps
+==============
+
+[wrigley:513] g++ -O4 -DBUFF=1000 -DBHEAP B-main.cc
+entries_sorted 1000
+seconds_taken 0.141868
+seconds_taken 0.142365
+seconds_taken 0.146199
+seconds_taken 0.15542
+seconds_taken 0.141775
+
+[wrigley:513] g++ -O4 -DBUFF=2000 -DBHEAP B-main.cc
+entries_sorted 2000
+seconds_taken 0.285396
+seconds_taken 0.300496
+seconds_taken 0.289288
+seconds_taken 0.295822
+seconds_taken 0.290951
+
+[wrigley:513] g++ -O4 -DBUFF=4000 -DBHEAP B-main.cc
+entries_sorted 4000
+seconds_taken 0.61078
+seconds_taken 0.603792
+seconds_taken 0.604496
+seconds_taken 0.603328
+seconds_taken 0.611716
+
+[wrigley:513] g++ -O4 -DBUFF=8000 -DBHEAP B-main.cc
+entries_sorted 8000
+seconds_taken 1.29754
+seconds_taken 1.29802
+seconds_taken 1.42065
+seconds_taken 1.33046
+seconds_taken 1.28628
+
+[wrigley:513] g++ -O4 -DBUFF=16000 -DBHEAP B-main.cc
+entries_sorted 16000
+seconds_taken 2.82594
+seconds_taken 2.83995
+seconds_taken 2.74099
+seconds_taken 3.01506
+seconds_taken 2.95705
+
+[wrigley:513] g++ -O4 -DBUFF=32000 -DBHEAP B-main.cc
+entries_sorted 32000
+seconds_taken 6.18272
+seconds_taken 5.94083
+seconds_taken 7.41182
+seconds_taken 6.2653
+seconds_taken 6.55166
+
+[wrigley:513] g++ -O4 -DBUFF=64000 -DBHEAP B-main.cc
+entries_sorted 64000
+seconds_taken 13.3078
+seconds_taken 13.2289
+seconds_taken 12.8815
+seconds_taken 12.6714
+seconds_taken 12.9673
+
+
+[wrigley:513] g++ -O4 -DBUFF=128000 -DBHEAP B-main.cc
+entries_sorted 128000
+seconds_taken 31.3124
+seconds_taken 28.2499
+seconds_taken 28.04
+seconds_taken 28.106
+seconds_taken 27.8412
+
+That is, we see a fairly tight distribution of the times taken, and a
+mostly a growth only slightly faster than linear.
+
+There is an "anomaly" in that the last set of times see a bigger jump.
+This is probably because the peak memory usage at this size (sorting
+128K entries) had grown to around 12MB, and presumably memory access
+issues start to become a problem.
+
+In fact, the memory usage seemed rather high overall. I do not know how
+much this is an effect of using C++ instead of C, and how much an
+effect of my implementation (e.g. using doubly linked lists instead of
+singly linked).
+
+
+Fibonacci heaps
+===============
+
+[wrigley:513] g++ -O4 -DBUFF=1000 -DLOG_BUFF=20 B-main.cc
+entries_sorted 1000
+seconds_taken 0.157608
+seconds_taken 0.159123
+seconds_taken 0.155643
+seconds_taken 0.154882
+seconds_taken 0.156925
+
+
+[wrigley:513] g++ -O4 -DBUFF=2000 -DLOG_BUFF=40 B-main.cc
+entries_sorted 2000
+seconds_taken 0.34688
+seconds_taken 0.340046
+seconds_taken 0.347349
+seconds_taken 0.344104
+seconds_taken 0.341949
+
+[wrigley:513] g++ -O4 -DBUFF=4000 -DLOG_BUFF=40 B-main.cc
+entries_sorted 4000
+seconds_taken 0.728227
+seconds_taken 0.716174
+seconds_taken 0.725256
+seconds_taken 0.73066
+seconds_taken 0.727921
+
+[wrigley:513] g++ -O4 -DBUFF=8000 -DLOG_BUFF=40 B-main.cc
+entries_sorted 8000
+seconds_taken 1.56074
+seconds_taken 1.6244
+seconds_taken 1.50263
+seconds_taken 1.87821
+seconds_taken 1.55553
+
+[...]
+
+[wrigley:513] g++ -O4 -DBUFF=128000 -DLOG_BUFF=40 B-main.cc
+entries_sorted 128000
+seconds_taken 34.174
+seconds_taken 33.4232
+seconds_taken 32.599
+seconds_taken 32.3281
+seconds_taken 32.2822
+
+That is it seems to be consistently just slightly slower than
+Binomial, but the same scaling behaviour.
+However it did seem to be a lot better on peak memory usage.

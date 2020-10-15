@@ -1,0 +1,86 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@core state display code for debugging blocks and for picture
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@void write_picture(struct state *it) {
+  int n = it->n_towers;
+  int *tower_heights = malloc(n * sizeof(int));
+  char *covered = malloc(n * sizeof(char));
+  int b, h, i, j, k;
+  int max_tower;
+
+  /* get tower heights and check for cycles */
+  for (i = 0; i < n; i++) {
+    k = 0;
+    for (j = it->tower_tops[i]; j > -1 && k <= n_blocks; j = it->blocks[j].on)
+      k++;
+    if (k > n_blocks) {
+      fprintf(stderr, "tower %d cycles\n", i);
+      exit(-1);
+    }
+    tower_heights[i] = k;
+  }
+  /* check for two blocks on same block */
+  for (i = 0; i < n_blocks; i++)
+    covered[i] = 0;
+  for (i = 0; i < it->n_towers; i++)
+    for (b = it->blocks[it->tower_tops[i]].on; b > -1; b = it->blocks[b].on) {
+      if (covered[b]) {
+	fprintf(stderr, "block %d covered twice\n", b);
+	exit(-1);
+      }
+      covered[b] = 1;
+    }
+  /* check for covered tower tops */
+  for (i = 0; i < it->n_towers; i++)
+    if (covered[it->tower_tops[i]]) {
+      fprintf(stderr, "tower %d top covered\n", i);
+      exit(-1);
+    }
+  /* find the tallest tower */
+  max_tower = 0;
+  for (i = 0; i < n; i++)
+    if (tower_heights[i] > max_tower)
+      max_tower = tower_heights[i];
+  /* actually print the towers */
+  for (i = 0; i < max_tower; i++) {
+    h = max_tower - i;
+    for (j = 0; j < n; j++)
+      if (tower_heights[j] < h)
+	printf("    ");
+      else {
+	char fl = ' ';
+	
+	b = it->tower_tops[j];
+	for (k = 0; k < tower_heights[j] - h; k++)
+	  b = it->blocks[b].on;
+	if (it->tower_bottoms[j] == b)
+	    fl = '=';
+	printf(" %c%02d", fl, b);
+      }
+    printf("\n");
+  }
+  /* free allocated store */
+  free((void *) tower_heights);
+  free((void *) covered);
+}
+@

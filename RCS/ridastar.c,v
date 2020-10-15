@@ -1,0 +1,269 @@
+head	1.7;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.7
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	96.07.17.00.27.35;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.02.09.19.41.01;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.07.02.24.55;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.02.11.51.15;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.31.20.56.25;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@restricted-move ida_star()
+@
+
+
+1.7
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@#include "blocks.h"
+#define PROTECT
+#include "idaprotect.c"
+
+static int depth_first(struct state *s, int c, struct protect *pp) {
+  struct protect p;
+  int i, j;
+  
+  if (same_state(s, goal)) {
+    ida_answer(s, pp);
+    return 1;
+  }
+  if (s->t_score > c)
+    return 0;
+  global_protect_move(s, &p, pp);
+  /* move any block not on the table which should be */
+  for (i = 0; i < s->n_towers; i++) {
+    int i0 = s->tower_tops[i];
+
+    if (s->blocks[i0].on != -1 && goal->blocks[i0].on == -1) {
+	local_protect_move(s, &p, i, -1);
+	move(s, i, -1);
+	if (depth_first(s, c, &p))
+	  return 1;
+	backout_move(s, &p);
+	return 0;
+    }
+  }
+  /* move any other must-move block into position */
+  for (j = 0; j < s->n_towers; j++) {
+    int n = score_towertop(s, j);
+    int j0;
+
+    /* must-move-twice blocks go to the table */
+    if (n == 2) {
+      local_protect_move(s, &p, j, -1);
+      move(s, j, -1);
+      if (depth_first(s, c, &p))
+	return 1;
+      backout_move(s, &p);
+      return 0;
+    }
+    /* move only onto correct partial towers */
+    if (n)
+      continue;
+    j0 = s->tower_tops[j];
+    /* examine each towertop as from */
+    for (i = 0; i < s->n_towers; i++)
+      if (i != j && j0 == goal->blocks[s->tower_tops[i]].on) {
+	local_protect_move(s, &p, i, j);
+	move(s, i, j);
+	if (depth_first(s, c, &p))
+	  return 1;
+	backout_move(s, &p);
+	return 0;
+      }
+  }
+  /*
+   * Otherwise, try moving something which must move to the table.
+   * Note that any tower top not on the table must move, here.
+   */
+  stat_decision_nodes++;
+  for (i = 0; i < s->n_towers; i++) {
+    if (s->blocks[s->tower_tops[i]].on == -1)
+      continue;
+    local_protect_move(s, &p, i, -1);
+    move(s, i, -1);
+    if (depth_first(s, c, &p))
+      return 1;
+    backout_move(s, &p);
+  }
+  /* We've tried all the moves that could possibly help.  We're stuck. */
+  return 0;
+}
+
+int rida_star(void) {
+  int c = start->t_score;
+  int i;
+
+  stat_decision_nodes = 0;
+  for (i = c; i < 2 * c + 2; i++) {
+    struct state *s = clone_state(start);
+    if (depth_first(s, i, 0))
+      return 0;
+    free_state(s);
+  }
+  printf("no solution!\n");
+  return -1;
+}
+  
+
+@
+
+
+1.6
+log
+@some fixes for tower_bottoms
+@
+text
+@d82 1
+a82 1
+    struct state *s = copy_state(start);
+@
+
+
+1.5
+log
+@tower_bottom debugging
+code restructuring
+@
+text
+@d2 1
+@
+
+
+1.4
+log
+@fixed move heuristics
+@
+text
+@d2 1
+a2 1
+#include "idamisc.c"
+@
+
+
+1.3
+log
+@added decision node count for rida
+@
+text
+@a7 2
+  if (s->t_score > c)
+    return 0;
+d12 2
+d15 14
+a28 1
+  /* move any tower top onto a correct tower */
+d30 12
+d43 1
+a43 1
+    if (score_towertop(s, j))
+d45 1
+d48 1
+a48 3
+      if (i != j) {
+	int old_h = s->h_score;
+	
+a50 5
+	if (s->h_score > old_h - 1) {
+	  /* this is not a strictly forward move */
+	  backout_move(s, &p);
+	  continue;
+	}
+a53 1
+	/* a strictly forward move failed, so we're stuck */
+d57 5
+a61 1
+  /* move any must-move-twice block onto the table */
+d63 1
+a63 1
+    if (score_towertop(s, i) != 2)
+d65 5
+a69 9
+    if (s->blocks[s->tower_tops[i]].on > -1) {
+      local_protect_move(s, &p, i, -1);
+      move(s, i, -1);
+      if (depth_first(s, c, &p))
+	return 1;
+      backout_move(s, &p);
+      /* a strictly forward move failed, so we're stuck */
+      return 0;
+    }
+a70 16
+  /* otherwise, try moving something which must move to the table. */
+  for (i = 0; i < s->n_towers; i++)
+    if (s->blocks[s->tower_tops[i]].on > -1) {
+      int old_h = s->h_score;
+      
+      local_protect_move(s, &p, i, -1);
+      move(s, i, -1);
+      if (s->h_score > old_h) {
+        backout_move(s, &p);
+	continue;
+      }
+      stat_decision_nodes++;
+      if (depth_first(s, c, &p))
+	return 1;
+      backout_move(s, &p);
+    }
+@
+
+
+1.2
+log
+@add missed-case of necessary move
+@
+text
+@d64 1
+d77 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d15 1
+a15 1
+  /* try moving a tower top onto a correct tower */
+d39 15
+a53 1
+  /* otherwise, move something which must move to the table. */
+@

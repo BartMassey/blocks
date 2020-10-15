@@ -1,0 +1,410 @@
+head	1.14;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.14
+date	2003.05.21.09.28.29;	author bart;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	96.07.17.02.05.43;	author bart;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	96.07.16.02.17.42;	author bart;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	96.07.12.21.53.39;	author bart;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	96.02.28.00.51.07;	author bart;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	96.02.09.02.35.17;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.02.07.02.43.34;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.02.07.02.24.55;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.02.13.55.31;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.01.31.20.56.25;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@driver for blocks
+@
+
+
+1.14
+log
+@fix up argument parsing a bit
+@
+text
+@#include "blocks.h"
+
+/* global state */
+int n_blocks;
+struct state *start, *saved_start, *goal;
+/* statistics */
+int stat_nodes = 1;
+int stat_cached = 1;
+int stat_open = 1;
+int stat_max_open = 1;
+int stat_max_g = 0;
+int stat_min_h;
+int stat_decision_nodes = -1;
+/* control */
+int verbose = 0;
+int node_limit = 0;
+int timer_expired = 0;
+int fast_heuristic = 1;
+int dumb_heuristic = 0;
+
+int main(int argc, char **argv) {
+  int ida = 0;
+  int rida = 0;
+  int ra = 0;
+
+  argv++; argc--;
+  while (argc > 0) {
+    if (argv[0][0] != '-') {
+      fprintf(stderr, "blocks: - expected\n");
+      exit(1);
+    } else {
+      switch (argv[0][1]) {
+      case 'v':
+	if (argc < 2) {
+	  fprintf(stderr, "blocks: -v: argument expected\n");
+	  exit(1);
+	}
+	verbose = atoi(argv[1]);
+	argv += 2; argc -= 2;
+	break;
+      case 'l':
+	if (argc < 2) {
+	  fprintf(stderr, "blocks: -l: argument expected\n");
+	  exit(1);
+	}
+	node_limit = atoi(argv[1]);
+	argv += 2; argc -= 2;
+	break;
+      case 't':
+	if (argc < 2) {
+	  fprintf(stderr, "blocks: -t: argument expected\n");
+	  exit(1);
+	}
+	set_timer(atoi(argv[1]));
+	argv += 2; argc -= 2;
+	break;
+      case 'a':
+	if (argc < 2) {
+	  fprintf(stderr, "blocks: -a: argument expected\n");
+	  exit(1);
+	}
+	if (!strcmp(argv[1], "ida"))
+	  ida = 1;
+	else if (!strcmp(argv[1], "rida"))
+	  rida = 1;
+	else if (!strcmp(argv[1], "ra"))
+	  ra = 1;
+	else {
+	  fprintf(stderr, "blocks: -a: unknown algorithm %s\n", argv[1]);
+	  exit(1);
+	}
+	argv += 2; argc -= 2;
+	break;
+      case 'x':
+	if (argc < 2) {
+	  fprintf(stderr, "blocks: -x: argument expected\n");
+	  exit(1);
+	}
+	if (!strcmp(argv[1], "slow"))
+	  fast_heuristic = 0;
+	else if(!strcmp(argv[1], "dumb"))
+	  dumb_heuristic = 1;
+	else {
+	  fprintf(stderr, "blocks: -x: unknown heuristic %s\n", argv[1]);
+	  exit(1);
+	}
+	argv += 2; argc -= 2;
+	break;
+      default:
+	fprintf(stderr, "blocks: usage: blocks [-v <verbosity>] "
+		        "[-l <nodelimit>] [-a rastar|ida|idastar] "
+		        "[-x slow|dumb] [-h]\n");
+	exit(1);
+      }
+    }
+  }
+  read_problem();
+  init_closure();
+  if (dumb_heuristic)
+    dumb_score_state(start);
+  else if (fast_heuristic)
+    score_state(start);
+  else
+    deluxe_score_state(start);
+  start->g_score = 0;
+  start->t_score = start->h_score;
+  hash_state(start);
+  start->parent = 0;
+  start->moved_block = -1;
+  start->moved_to = -1;
+  goal->h_score = 0;   /* better be! */
+  hash_state(goal);
+  stat_min_h = start->h_score;
+  if (verbose > 2) {
+    printf("start state:\n");
+    write_picture(start);
+    printf("goal state:\n");
+    write_picture(goal);
+  }
+  saved_start = clone_state(start);
+  if (ida)
+    return ida_star();
+  if (rida)
+    return rida_star();
+  if (ra)
+    return ra_star();
+  return a_star();
+}
+@
+
+
+1.13
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@d27 1
+a27 1
+  while (argc > 0)
+d31 1
+a31 1
+    } else
+d74 1
+a74 1
+      case 'h':
+d76 1
+a76 1
+	  fprintf(stderr, "blocks: -h: argument expected\n");
+d84 1
+a84 1
+	  fprintf(stderr, "blocks: -h: unknown heuristic %s\n", argv[1]);
+d89 5
+d95 2
+@
+
+
+1.12
+log
+@add soundness check
+@
+text
+@d113 1
+a113 1
+  saved_start = copy_state(start);
+@
+
+
+1.11
+log
+@better debugging
+@
+text
+@d5 1
+a5 1
+struct state *start, *goal;
+d113 1
+@
+
+
+1.10
+log
+@tower_bottom debugging
+code restructuring
+@
+text
+@d107 6
+@
+
+
+1.9
+log
+@user argument checking
+dumb_heuristic
+@
+text
+@a91 1
+  fix_bottoms(start);
+@
+
+
+1.8
+log
+@add deluxe scoring
+@
+text
+@d19 1
+d28 4
+a31 3
+    if (argv[0][0] != '-')
+      abort();
+    else
+d34 4
+a37 2
+	if (argc < 2)
+	  abort();
+d42 4
+a45 2
+	if (argc < 2)
+	  abort();
+d50 4
+a53 2
+	if (argc < 2)
+	  abort();
+d58 4
+a61 2
+	if (argc < 2)
+	  abort();
+d68 4
+a71 2
+	else
+	  abort();
+d75 13
+a87 2
+	fast_heuristic = 0;
+	argv++; argc--;
+d93 3
+a95 1
+  if (fast_heuristic)
+@
+
+
+1.7
+log
+@fixes to allow non-incremental heuristic at command line
+@
+text
+@d68 6
+a73 1
+  score_state(start);
+@
+
+
+1.6
+log
+@fixes for rastar
+@
+text
+@d18 1
+d62 4
+d68 3
+a70 1
+  score_state(start, 0);
+@
+
+
+1.5
+log
+@added time limit control
+@
+text
+@d22 1
+d55 2
+d75 2
+@
+
+
+1.4
+log
+@added decision node count for rida
+@
+text
+@a15 2
+int ida = 0;
+int rida = 0;
+d17 1
+d20 3
+d39 6
+@
+
+
+1.3
+log
+@fixes to support hashing for same_state()
+@
+text
+@d13 1
+@
+
+
+1.2
+log
+@changes to support rida_star()
+@
+text
+@d52 1
+d57 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d16 1
+d43 2
+d46 1
+a46 1
+	  ida = 0;
+d59 2
+@

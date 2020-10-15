@@ -1,0 +1,331 @@
+blocks -a rida  -t 10
+PROBS/slaney-5-0.prob 0.03 4 0 3 3
+PROBS/slaney-5-1.prob 0.02 6 0 5 5
+PROBS/slaney-5-2.prob 0.04 5 0 4 4
+PROBS/slaney-5-3.prob 0.01 5 0 4 4
+PROBS/slaney-5-4.prob 0.01 6 0 5 5
+PROBS/slaney-6-0.prob 0.01 9 0 8 8
+PROBS/slaney-6-1.prob 0.03 8 0 7 7
+PROBS/slaney-6-2.prob 0 6 0 5 5
+PROBS/slaney-6-3.prob 0.02 10 0 9 9
+PROBS/slaney-6-4.prob 0.03 10 0 9 9
+PROBS/slaney-7-0.prob 0 8 0 7 7
+PROBS/slaney-7-1.prob 0.03 8 0 7 7
+PROBS/slaney-7-2.prob 0.01 8 0 7 7
+PROBS/slaney-7-3.prob 0.03 7 0 6 6
+PROBS/slaney-7-4.prob 0.03 10 0 9 9
+PROBS/slaney-8-0.prob 0.03 12 0 11 11
+PROBS/slaney-8-1.prob 0.02 6 0 5 5
+PROBS/slaney-8-2.prob 0.05 9 0 8 8
+PROBS/slaney-8-3.prob 0.01 9 0 8 8
+PROBS/slaney-8-4.prob 0.02 7 0 6 6
+PROBS/slaney-9-0.prob 0.04 11 0 10 10
+PROBS/slaney-9-1.prob 0.02 7 0 6 6
+PROBS/slaney-9-2.prob 0.02 11 0 10 10
+PROBS/slaney-9-3.prob 0.03 12 0 11 11
+PROBS/slaney-9-4.prob 0.02 8 0 7 7
+PROBS/slaney-10-0.prob 0.04 14 0 13 13
+PROBS/slaney-10-1.prob 0.03 12 0 11 11
+PROBS/slaney-10-2.prob 0 12 0 11 11
+PROBS/slaney-10-3.prob 0.01 13 0 12 12
+PROBS/slaney-10-4.prob 0.03 12 0 11 11
+PROBS/slaney-11-0.prob 0.04 15 2 10 11
+PROBS/slaney-11-1.prob 0.03 13 0 12 12
+PROBS/slaney-11-2.prob 0.03 17 0 16 16
+PROBS/slaney-11-3.prob 0.02 24 3 11 12
+PROBS/slaney-11-4.prob 0.02 15 0 14 14
+PROBS/slaney-12-0.prob 0.03 14 0 13 13
+PROBS/slaney-12-1.prob 0.04 14 0 13 13
+PROBS/slaney-12-2.prob 0.03 16 0 15 15
+PROBS/slaney-12-3.prob 0.01 18 0 17 17
+PROBS/slaney-12-4.prob 0.01 11 0 10 10
+PROBS/slaney-13-0.prob 0.03 15 0 14 14
+PROBS/slaney-13-1.prob 0.01 22 0 21 21
+PROBS/slaney-13-2.prob 0.02 33 5 12 13
+PROBS/slaney-13-3.prob 0.03 17 0 16 16
+PROBS/slaney-13-4.prob 0.04 16 0 15 15
+PROBS/slaney-14-0.prob 0.04 18 0 17 17
+PROBS/slaney-14-1.prob 0.03 23 2 16 17
+PROBS/slaney-14-2.prob 0.02 17 0 16 16
+PROBS/slaney-14-3.prob 0.03 19 0 18 18
+PROBS/slaney-14-4.prob 0.02 16 0 15 15
+PROBS/slaney-15-0.prob 0.01 26 3 14 15
+PROBS/slaney-15-1.prob 0.01 25 0 24 24
+PROBS/slaney-15-2.prob 0.03 16 0 15 15
+PROBS/slaney-15-3.prob 0.03 19 0 18 18
+PROBS/slaney-15-4.prob 0.02 18 0 17 17
+PROBS/slaney-16-0.prob 0.05 225 55 15 18
+PROBS/slaney-16-1.prob 0 20 0 19 19
+PROBS/slaney-16-2.prob 0.04 18 0 17 17
+PROBS/slaney-16-3.prob 0.03 20 0 19 19
+PROBS/slaney-16-4.prob 0.03 21 0 20 20
+PROBS/slaney-17-0.prob 0.02 20 0 19 19
+PROBS/slaney-17-1.prob 0.02 39 4 18 19
+PROBS/slaney-17-2.prob 0.04 64 11 17 19
+PROBS/slaney-17-3.prob 0.01 22 0 21 21
+PROBS/slaney-17-4.prob 0.04 45 2 23 24
+PROBS/slaney-18-0.prob 0.02 41 3 20 21
+PROBS/slaney-18-1.prob 0.01 36 2 22 23
+PROBS/slaney-18-2.prob 0.03 29 3 21 22
+PROBS/slaney-18-3.prob 0.02 24 0 23 23
+PROBS/slaney-18-4.prob 0.02 27 0 26 26
+PROBS/slaney-19-0.prob 0.03 49 2 26 27
+PROBS/slaney-19-1.prob 0.04 25 0 24 24
+PROBS/slaney-19-2.prob 0.02 29 0 28 28
+PROBS/slaney-19-3.prob 0.04 31 0 30 30
+PROBS/slaney-19-4.prob 0.01 24 0 23 23
+PROBS/slaney-20-0.prob 0.04 35 0 34 34
+PROBS/slaney-20-1.prob 0.03 24 0 23 23
+PROBS/slaney-20-2.prob 0.01 22 0 21 21
+PROBS/slaney-20-3.prob 0.01 29 0 28 28
+PROBS/slaney-20-4.prob 0.02 54 4 26 27
+PROBS/slaney-21-0.prob 0.04 171 19 24 26
+PROBS/slaney-21-1.prob 0.03 88 9 21 23
+PROBS/slaney-21-2.prob 0.03 33 2 23 24
+PROBS/slaney-21-3.prob 0.03 47 2 30 31
+PROBS/slaney-21-4.prob 0.05 26 0 25 25
+PROBS/slaney-22-0.prob 0.01 22 0 21 21
+PROBS/slaney-22-1.prob 0.02 56 3 24 25
+PROBS/slaney-22-2.prob 0.03 83 8 29 31
+PROBS/slaney-22-3.prob 0.02 46 2 30 31
+PROBS/slaney-22-4.prob 0 36 0 35 35
+PROBS/slaney-23-0.prob 0.02 138 24 26 29
+PROBS/slaney-23-1.prob 0.01 57 5 30 31
+PROBS/slaney-23-2.prob 0.02 38 2 26 27
+PROBS/slaney-23-3.prob 0.02 45 2 31 32
+PROBS/slaney-23-4.prob 0.04 43 2 33 34
+PROBS/slaney-24-0.prob 0.03 32 0 31 31
+PROBS/slaney-24-1.prob 0.05 80 9 29 31
+PROBS/slaney-24-2.prob 0.01 311 41 26 29
+PROBS/slaney-24-3.prob 0.03 67 4 28 29
+PROBS/slaney-24-4.prob 0.03 36 0 35 35
+PROBS/slaney-25-0.prob 0.01 211 29 30 32
+PROBS/slaney-25-1.prob 0.02 33 0 32 32
+PROBS/slaney-25-2.prob 0.04 31 0 30 30
+PROBS/slaney-25-3.prob 0.04 56 3 29 30
+PROBS/slaney-25-4.prob 0.03 28 0 27 27
+PROBS/slaney-26-0.prob 0.02 65 3 36 37
+PROBS/slaney-26-1.prob 0.02 30 0 29 29
+PROBS/slaney-26-2.prob 0.04 33 0 32 32
+PROBS/slaney-26-3.prob 0.02 59 2 37 38
+PROBS/slaney-26-4.prob 0.03 31 0 30 30
+PROBS/slaney-27-0.prob 0.04 42 0 41 41
+PROBS/slaney-27-1.prob 0.05 98 7 32 34
+PROBS/slaney-27-2.prob 0.05 591 81 32 35
+PROBS/slaney-27-3.prob 0.03 33 0 32 32
+PROBS/slaney-27-4.prob 0.04 94 13 37 39
+PROBS/slaney-28-0.prob 0.03 139 11 30 32
+PROBS/slaney-28-1.prob 0.03 64 2 37 38
+PROBS/slaney-28-2.prob 0.01 40 0 39 39
+PROBS/slaney-28-3.prob 0.03 58 2 37 38
+PROBS/slaney-28-4.prob 0.06 654 116 31 35
+PROBS/slaney-29-0.prob 0.05 915 124 30 34
+PROBS/slaney-29-1.prob 0.03 46 2 36 37
+PROBS/slaney-29-2.prob 0.04 81 6 38 40
+PROBS/slaney-29-3.prob 0.05 244 30 38 41
+PROBS/slaney-29-4.prob 0.03 35 0 34 34
+PROBS/slaney-30-0.prob 0.02 51 2 43 44
+PROBS/slaney-30-1.prob 0.02 63 2 44 45
+PROBS/slaney-30-2.prob 0.03 66 2 37 38
+PROBS/slaney-30-3.prob 0.14 2387 372 36 40
+PROBS/slaney-30-4.prob 0.04 72 2 48 49
+PROBS/slaney-31-0.prob 0.02 63 3 34 35
+PROBS/slaney-31-1.prob 0.04 107 12 41 43
+PROBS/slaney-31-2.prob 0.04 121 11 38 40
+PROBS/slaney-31-3.prob 0.04 42 0 41 41
+PROBS/slaney-31-4.prob 0.02 40 0 39 39
+PROBS/slaney-32-0.prob 0.06 721 114 41 45
+PROBS/slaney-32-1.prob 0.04 131 10 40 42
+PROBS/slaney-32-2.prob 0.02 46 0 45 45
+PROBS/slaney-32-3.prob 0.03 58 3 38 39
+PROBS/slaney-32-4.prob 0.04 57 2 48 49
+PROBS/slaney-33-0.prob 0.04 63 2 45 46
+PROBS/slaney-33-1.prob 0.03 85 2 47 48
+PROBS/slaney-33-2.prob 0.02 140 8 45 47
+PROBS/slaney-33-3.prob 0.04 89 9 41 43
+PROBS/slaney-33-4.prob 0.03 139 11 44 46
+PROBS/slaney-34-0.prob 0.04 85 2 44 45
+PROBS/slaney-34-1.prob 0.04 70 2 48 49
+PROBS/slaney-34-2.prob 0.04 128 11 43 45
+PROBS/slaney-34-3.prob 0.04 92 3 50 51
+PROBS/slaney-34-4.prob 0.03 43 0 42 42
+PROBS/slaney-35-0.prob 0.02 60 0 59 59
+PROBS/slaney-35-1.prob 0.03 75 2 52 53
+PROBS/slaney-35-2.prob 0.04 131 8 51 53
+PROBS/slaney-35-3.prob 0.05 209 18 47 49
+PROBS/slaney-35-4.prob 0.05 224 29 42 45
+PROBS/slaney-36-0.prob 0.03 127 9 46 48
+PROBS/slaney-36-1.prob 0.04 50 0 49 49
+PROBS/slaney-36-2.prob 0.11 1148 169 48 52
+PROBS/slaney-36-3.prob 0.04 145 8 53 55
+PROBS/slaney-36-4.prob 0.05 129 10 47 49
+PROBS/slaney-37-0.prob 0.01 69 2 51 52
+PROBS/slaney-37-1.prob 0.04 45 0 44 44
+PROBS/slaney-37-2.prob 0.35 5642 646 45 50
+PROBS/slaney-37-3.prob 0.05 516 58 48 51
+PROBS/slaney-37-4.prob 0.04 105 8 46 48
+PROBS/slaney-38-0.prob 0.05 571 58 46 49
+PROBS/slaney-38-1.prob 0.06 421 47 53 56
+PROBS/slaney-38-2.prob 0.04 86 2 54 55
+PROBS/slaney-38-3.prob 0.06 233 14 52 54
+PROBS/slaney-38-4.prob 0.07 123 7 60 62
+PROBS/slaney-39-0.prob 0.02 84 2 61 62
+PROBS/slaney-39-1.prob 0.07 572 50 50 53
+PROBS/slaney-39-2.prob 0.08 821 87 51 54
+PROBS/slaney-39-3.prob 0.2 3636 455 48 52
+PROBS/slaney-39-4.prob 0.05 101 5 59 60
+PROBS/slaney-40-0.prob 0.06 57 2 49 50
+PROBS/slaney-40-1.prob 0.03 88 3 53 54
+PROBS/slaney-40-2.prob 0.04 145 10 49 51
+PROBS/slaney-40-3.prob 0.04 450 43 51 54
+PROBS/slaney-40-4.prob 0.05 171 10 54 56
+PROBS/slaney-41-0.prob 0.22 3751 474 49 53
+PROBS/slaney-41-1.prob 0.16 2858 418 54 58
+PROBS/slaney-41-2.prob 0.05 193 10 50 52
+PROBS/slaney-41-3.prob 0.13 1715 134 55 59
+PROBS/slaney-41-4.prob 0.03 82 2 58 59
+PROBS/slaney-42-0.prob 0.11 1431 185 52 56
+PROBS/slaney-42-1.prob 0.05 187 12 63 65
+PROBS/slaney-42-2.prob 0.05 125 4 61 62
+PROBS/slaney-42-3.prob 1.96 39733 7076 55 62
+PROBS/slaney-42-4.prob 0.14 1671 266 57 60
+PROBS/slaney-43-0.prob 0.07 676 83 59 62
+PROBS/slaney-43-1.prob 0.05 215 21 59 61
+PROBS/slaney-43-2.prob 0.04 237 18 61 63
+PROBS/slaney-43-3.prob 0.03 111 3 53 54
+PROBS/slaney-43-4.prob 0.21 2587 283 53 56
+PROBS/slaney-44-0.prob 0.05 406 57 63 66
+PROBS/slaney-44-1.prob 0.04 324 31 63 66
+PROBS/slaney-44-2.prob 0.07 443 47 52 55
+PROBS/slaney-44-3.prob 0.02 75 4 50 51
+PROBS/slaney-44-4.prob 0.06 367 27 68 70
+PROBS/slaney-45-0.prob 0.05 523 44 63 65
+PROBS/slaney-45-1.prob 0.65 13366 1855 52 57
+PROBS/slaney-45-2.prob 4.03 66389 6064 51 56
+PROBS/slaney-45-3.prob 0.34 5219 625 59 63
+PROBS/slaney-45-4.prob 0.1 935 96 59 63
+PROBS/slaney-46-0.prob 10.03 -1
+PROBS/slaney-46-1.prob 0.06 175 13 68 70
+PROBS/slaney-46-2.prob 0.08 369 32 60 63
+PROBS/slaney-46-3.prob 6.88 122214 13014 58 64
+PROBS/slaney-46-4.prob 0.66 11409 1870 58 63
+PROBS/slaney-47-0.prob 0.07 161 8 77 79
+PROBS/slaney-47-1.prob 0.04 69 0 68 68
+PROBS/slaney-47-2.prob 0.34 6414 762 52 56
+PROBS/slaney-47-3.prob 0.03 332 31 64 67
+PROBS/slaney-47-4.prob 0.18 2478 241 63 67
+PROBS/slaney-48-0.prob 6.14 122740 16115 63 69
+PROBS/slaney-48-1.prob 0.04 309 22 63 66
+PROBS/slaney-48-2.prob 0.15 1043 121 64 68
+PROBS/slaney-48-3.prob 0.03 449 48 59 62
+PROBS/slaney-48-4.prob 0.08 731 69 63 66
+PROBS/slaney-49-0.prob 0.06 752 67 56 59
+PROBS/slaney-49-1.prob 0.05 259 22 71 74
+PROBS/slaney-49-2.prob 0.19 2699 237 57 61
+PROBS/slaney-49-3.prob 0.18 2307 219 68 72
+PROBS/slaney-49-4.prob 0.59 7290 691 65 70
+PROBS/slaney-50-0.prob 0.14 1452 251 70 75
+PROBS/slaney-50-1.prob 0.07 604 39 69 72
+PROBS/slaney-50-2.prob 0.07 692 74 65 68
+PROBS/slaney-50-3.prob 0.05 74 0 73 73
+PROBS/slaney-50-4.prob 0.8 12913 956 63 67
+PROBS/slaney-51-0.prob 0.11 1367 125 77 81
+PROBS/slaney-51-1.prob 0.34 4973 446 64 68
+PROBS/slaney-51-2.prob 10.02 -1
+PROBS/slaney-51-3.prob 0.41 4710 369 71 75
+PROBS/slaney-51-4.prob 0.26 3758 464 72 76
+PROBS/slaney-52-0.prob 3.24 48649 6641 70 76
+PROBS/slaney-52-1.prob 0.68 8954 1237 73 78
+PROBS/slaney-52-2.prob 0.07 540 49 65 67
+PROBS/slaney-52-3.prob 0.22 2476 288 72 75
+PROBS/slaney-52-4.prob 0.09 746 74 69 72
+PROBS/slaney-53-0.prob 10.03 -1
+PROBS/slaney-53-1.prob 10.01 -1
+PROBS/slaney-53-2.prob 10.01 -1
+PROBS/slaney-53-3.prob 10.02 -1
+PROBS/slaney-53-4.prob 2.47 34163 4117 70 76
+PROBS/slaney-54-0.prob 10.01 -1
+PROBS/slaney-54-1.prob 0.06 277 18 73 75
+PROBS/slaney-54-2.prob 0.37 5512 527 70 74
+PROBS/slaney-54-3.prob 0.07 399 40 80 83
+PROBS/slaney-54-4.prob 0.05 84 0 83 83
+PROBS/slaney-55-0.prob 1.55 24321 2111 75 80
+PROBS/slaney-55-1.prob 0.37 4051 399 74 78
+PROBS/slaney-55-2.prob 10.01 -1
+PROBS/slaney-55-3.prob 0.1 228 16 84 86
+PROBS/slaney-55-4.prob 5.3 101069 15904 70 76
+PROBS/slaney-56-0.prob 10.04 -1
+PROBS/slaney-56-1.prob 10.02 -1
+PROBS/slaney-56-2.prob 1.48 23678 3400 83 89
+PROBS/slaney-56-3.prob 8.69 198391 21541 72 78
+PROBS/slaney-56-4.prob 0.13 1492 198 74 78
+PROBS/slaney-57-0.prob 0.04 148 3 88 89
+PROBS/slaney-57-1.prob 10.01 -1
+PROBS/slaney-57-2.prob 0.24 2769 242 83 87
+PROBS/slaney-57-3.prob 10.03 -1
+PROBS/slaney-57-4.prob 6.71 112468 13034 74 80
+PROBS/slaney-58-0.prob 8.16 99561 11155 80 86
+PROBS/slaney-58-1.prob 10.01 -1
+PROBS/slaney-58-2.prob 10.01 -1
+PROBS/slaney-58-3.prob 10.02 -1
+PROBS/slaney-58-4.prob 10.01 -1
+PROBS/slaney-59-0.prob 10.01 -1
+PROBS/slaney-59-1.prob 4.2 61138 5719 88 93
+PROBS/slaney-59-2.prob 0.08 908 80 88 92
+PROBS/slaney-59-3.prob 0.12 1271 136 82 86
+PROBS/slaney-59-4.prob 0.7 11350 1016 82 86
+PROBS/slaney-60-0.prob 2.8 47162 4668 75 80
+PROBS/slaney-60-1.prob 10.04 -1
+PROBS/slaney-60-2.prob 10.02 -1
+PROBS/slaney-60-3.prob 10.03 -1
+PROBS/slaney-60-4.prob 0.05 189 10 85 87
+PROBS/slaney-61-0.prob 1.01 19290 1912 82 86
+PROBS/slaney-61-1.prob 0.27 4556 590 86 90
+PROBS/slaney-61-2.prob 10.05 -1
+PROBS/slaney-61-3.prob 10.02 -1
+PROBS/slaney-61-4.prob 0.4 4461 473 95 100
+PROBS/slaney-62-0.prob 0.49 6974 860 86 91
+PROBS/slaney-62-1.prob 10.01 -1
+PROBS/slaney-62-2.prob 0.43 6279 591 88 92
+PROBS/slaney-62-3.prob 8.96 132995 11614 84 90
+PROBS/slaney-62-4.prob 10.03 -1
+PROBS/slaney-63-0.prob 2.31 28148 2519 88 93
+PROBS/slaney-63-1.prob 10.02 -1
+PROBS/slaney-63-2.prob 10.03 -1
+PROBS/slaney-63-3.prob 5.56 59830 9194 80 87
+PROBS/slaney-63-4.prob 4.43 45189 6039 92 99
+PROBS/slaney-64-0.prob 0.03 130 2 85 86
+PROBS/slaney-64-1.prob 6.73 93918 9718 84 89
+PROBS/slaney-64-2.prob 3.15 40463 4151 90 95
+PROBS/slaney-64-3.prob 0.43 3714 278 94 98
+PROBS/slaney-64-4.prob 6.51 92934 12087 85 91
+PROBS/slaney-65-0.prob 10.02 -1
+PROBS/slaney-65-1.prob 0.61 9682 1025 90 95
+PROBS/slaney-65-2.prob 10.03 -1
+PROBS/slaney-65-3.prob 0.5 5501 502 98 103
+PROBS/slaney-65-4.prob 2.71 46090 3670 84 88
+PROBS/slaney-66-0.prob 10 -1
+PROBS/slaney-66-1.prob 1.07 13826 994 88 92
+PROBS/slaney-66-2.prob 10.03 -1
+PROBS/slaney-66-3.prob 4.68 57019 6221 94 100
+PROBS/slaney-66-4.prob 10.03 -1
+PROBS/slaney-67-0.prob 2.19 24521 2415 96 101
+PROBS/slaney-67-1.prob 0.65 7077 665 96 100
+PROBS/slaney-67-2.prob 10 -1
+PROBS/slaney-67-3.prob 10.02 -1
+PROBS/slaney-67-4.prob 10.01 -1
+PROBS/slaney-68-0.prob 0.07 130 3 100 101
+PROBS/slaney-68-1.prob 10.03 -1
+PROBS/slaney-68-2.prob 10.02 -1
+PROBS/slaney-68-3.prob 10.01 -1
+PROBS/slaney-68-4.prob 0.07 143 5 96 97
+PROBS/slaney-69-0.prob 10.02 -1
+PROBS/slaney-69-1.prob 10.01 -1
+PROBS/slaney-69-2.prob 10.02 -1
+PROBS/slaney-69-3.prob 10.02 -1
+PROBS/slaney-69-4.prob 10.02 -1
+PROBS/slaney-70-0.prob 10.02 -1
+PROBS/slaney-70-1.prob 10.02 -1
+PROBS/slaney-70-2.prob 10.02 -1
+PROBS/slaney-70-3.prob 10.03 -1
+PROBS/slaney-70-4.prob 0.12 841 55 89 92

@@ -1,0 +1,26 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.1
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@state printer for blocks
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#include "blocks.h"
+#include "writepicture.c"
+@

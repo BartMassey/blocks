@@ -1,0 +1,279 @@
+head	1.8;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.8
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	96.07.12.21.53.39;	author bart;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.02.21.02.50.18;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.02.21.02.25.43;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.05.23.52.50;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.02.13.55.31;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@state manipulations for blocks
+@
+
+
+1.8
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@#include "blocks.h"
+
+INLINE struct state *alloc_state(void) {
+  struct state *new = malloc(sizeof(*new));
+
+  if (!new) {
+    perror("malloc (new)");
+    exit(-1);
+  }
+  new->blocks = malloc(sizeof(new->blocks[0]) * n_blocks);
+  if (!new->blocks) {
+    perror("malloc (new->blocks)");
+    exit(-1);
+  }
+  /*
+   * We should be careful and only allocate n_towers
+   * new tower_tops, but that might be one too few
+   * for move(), which may want to start a new tower...
+   * Punt for now.
+   */
+  new->tower_tops = malloc(sizeof(new->tower_tops[0]) * n_blocks);
+  if (!new->tower_tops) {
+    perror("malloc (new->tower_tops)");
+    exit(-1);
+  }
+  new->tower_bottoms = malloc(sizeof(new->tower_bottoms[0]) * n_blocks);
+  if (!new->tower_bottoms) {
+    perror("malloc (new->tower_bottoms)");
+    exit(-1);
+  }
+  return new;
+}
+
+void free_state(struct state *s) {
+  free(s->blocks);
+  free(s->tower_tops);
+  free(s->tower_bottoms);
+  free(s);
+}
+
+int is_same_state(struct state *s1, struct state *s2) {
+  int i;
+
+  /*
+   * XXX This first check is redundant --
+   * performed by same_state() macro.
+   * We'll repeat for safety.
+   */
+  if (s1->hash != s2->hash)
+    return 0;
+  if (s1->n_towers != s2->n_towers)
+    return 0;
+  for (i = 0; i < n_blocks; i++)
+    if (s1->blocks[i].on != s2->blocks[i].on)
+      return 0;
+  return 1;
+}
+
+INLINE struct state *clone_state(struct state *old) {
+  struct state *new = alloc_state();
+#ifdef NO_MEMCPY
+  int i, n;
+  
+  n = n_blocks;
+  for (i = 0; i < n; i++)
+    new->blocks[i] = old->blocks[i];
+  n = old->n_towers;
+  for (i = 0; i < n; i++)
+    new->tower_tops[i] = old->tower_tops[i];
+  for (i = 0; i < n; i++)
+    new->tower_bottoms[i] = old->tower_bottoms[i];
+#else
+  memcpy(new->blocks, old->blocks,
+	 n_blocks * sizeof(old->blocks[0]));
+  memcpy(new->tower_tops, old->tower_tops,
+	 old->n_towers * sizeof(old->tower_tops[0]));
+  memcpy(new->tower_bottoms, old->tower_bottoms,
+	 old->n_towers * sizeof(old->tower_bottoms[0]));
+#endif
+  new->n_towers = old->n_towers;
+  new->g_score = old->g_score;
+  new->h_score = old->h_score;
+  new->t_score = old->t_score;
+  new->hash = old->hash;
+  new->parent = old->parent;
+  return new;
+}
+    
+struct state *copy_state(struct state *parent) {
+  struct state *new = clone_state(parent);
+  
+  new->parent = parent;
+  return new;
+}
+@
+
+
+1.7
+log
+@remove heuristic from is_same_state() checks to avoid bugs
+@
+text
+@d59 1
+a59 1
+struct state *copy_state(struct state *parent) {
+d66 2
+a67 2
+    new->blocks[i] = parent->blocks[i];
+  n = parent->n_towers;
+d69 1
+a69 1
+    new->tower_tops[i] = parent->tower_tops[i];
+d71 1
+a71 1
+    new->tower_bottoms[i] = parent->tower_bottoms[i];
+d73 6
+a78 6
+  memcpy(new->blocks, parent->blocks,
+	 n_blocks * sizeof(parent->blocks[0]));
+  memcpy(new->tower_tops, parent->tower_tops,
+	 parent->n_towers * sizeof(parent->tower_tops[0]));
+  memcpy(new->tower_bottoms, parent->tower_bottoms,
+	 parent->n_towers * sizeof(parent->tower_bottoms[0]));
+d80 12
+a91 5
+  new->n_towers = parent->n_towers;
+  new->g_score = parent->g_score;
+  new->h_score = parent->h_score;
+  new->t_score = parent->t_score;
+  new->hash = parent->hash;
+a94 1
+    
+@
+
+
+1.6
+log
+@handle tower_bottoms
+@
+text
+@d51 1
+a51 1
+  if (s1->n_towers != s2->n_towers || s1->h_score != s2->h_score)
+@
+
+
+1.5
+log
+@do memcpy() in copy_state()
+@
+text
+@d26 5
+d37 1
+d70 2
+a72 1
+  
+d77 2
+@
+
+
+1.4
+log
+@fix sizeof in allocations
+@
+text
+@d3 1
+a3 1
+struct state *alloc_state(void) {
+d55 2
+a56 1
+  int i;
+d58 2
+a59 1
+  for (i = 0; i < n_blocks; i++)
+d61 10
+a71 2
+  for (i = 0; i < parent->n_towers; i++)
+    new->tower_tops[i] = parent->tower_tops[i];
+@
+
+
+1.3
+log
+@renamed same_state() to is_same_state() for inlining in blocks.h
+@
+text
+@d4 1
+a4 1
+  struct state *new = malloc(sizeof(struct state));
+d10 1
+a10 1
+  new->blocks = malloc(sizeof(struct block) * n_blocks);
+d21 1
+a21 1
+  new->tower_tops = malloc(sizeof(int) * n_blocks);
+@
+
+
+1.2
+log
+@fixes to support hashing for same_state()
+@
+text
+@d35 1
+a35 1
+int same_state(struct state *s1, struct state *s2) {
+d37 6
+a42 1
+  
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d38 2
+d60 1
+@

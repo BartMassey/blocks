@@ -1,0 +1,88 @@
+blocks -a ida  -t 10
+FULL/selman-5-0.prob 0.01 25 7 7
+FULL/selman-5-1.prob 0.03 23 6 6
+FULL/selman-5-2.prob 0.04 26 7 7
+FULL/selman-5-3.prob 0.03 22 6 6
+FULL/selman-5-4.prob 0.04 25 6 6
+FULL/selman-6-0.prob 0.04 43 8 8
+FULL/selman-6-1.prob 0.01 36 8 8
+FULL/selman-6-2.prob 0.04 45 9 9
+FULL/selman-6-3.prob 0.03 32 8 8
+FULL/selman-6-4.prob 0.02 27 8 8
+FULL/selman-7-0.prob 0.03 48 10 10
+FULL/selman-7-1.prob 0.03 35 9 9
+FULL/selman-7-2.prob 0.01 82 11 11
+FULL/selman-7-3.prob 0.03 43 10 10
+FULL/selman-7-4.prob 0.02 40 10 10
+FULL/selman-8-0.prob 0.02 39 8 8
+FULL/selman-8-1.prob 0.03 57 12 12
+FULL/selman-8-2.prob 0.08 88 13 13
+FULL/selman-8-3.prob 0.01 43 10 10
+FULL/selman-8-4.prob 0.03 85 12 12
+FULL/selman-9-0.prob 0.03 73 10 10
+FULL/selman-9-1.prob 0.03 98 11 11
+FULL/selman-9-2.prob 0.02 79 11 11
+FULL/selman-9-3.prob 0.03 166 11 12
+FULL/selman-9-4.prob 0.02 60 9 9
+FULL/selman-10-0.prob 0.07 2450 12 13
+FULL/selman-10-1.prob 1.16 56072 13 14
+FULL/selman-10-2.prob 0.05 640 12 13
+FULL/selman-10-3.prob 0.03 66 11 11
+FULL/selman-10-4.prob 0.03 91 14 14
+FULL/selman-11-0.prob 0.03 138 15 15
+FULL/selman-11-1.prob 0.02 121 15 15
+FULL/selman-11-2.prob 0.14 6650 14 15
+FULL/selman-11-3.prob 0.05 1002 13 14
+FULL/selman-11-4.prob 0.04 154 15 15
+FULL/selman-12-0.prob 0.04 324 15 16
+FULL/selman-12-1.prob 0.02 101 17 17
+FULL/selman-12-2.prob 1.82 89470 15 17
+FULL/selman-12-3.prob 5.55 274177 16 17
+FULL/selman-12-4.prob 0.02 109 14 14
+FULL/selman-13-0.prob 0.03 186 17 17
+FULL/selman-13-1.prob 0.02 202 18 18
+FULL/selman-13-2.prob 0.05 226 18 18
+FULL/selman-13-3.prob 0.02 158 16 16
+FULL/selman-13-4.prob 0.04 239 17 17
+FULL/selman-14-0.prob 2.42 119148 19 20
+FULL/selman-14-1.prob 0.02 211 19 19
+FULL/selman-14-2.prob 0.03 228 19 19
+FULL/selman-14-3.prob 0.02 145 16 16
+FULL/selman-14-4.prob 2.39 116906 18 19
+FULL/selman-15-0.prob 0.03 245 17 18
+FULL/selman-15-1.prob 0.02 145 18 18
+FULL/selman-15-2.prob 0.02 169 19 19
+FULL/selman-15-3.prob 0.69 32185 21 22
+FULL/selman-15-4.prob 0.01 176 20 20
+FULL/selman-16-0.prob 1.31 62137 19 20
+FULL/selman-16-1.prob 0.04 313 20 20
+FULL/selman-16-2.prob 0.04 228 17 17
+FULL/selman-16-3.prob 2.26 108478 18 20
+FULL/selman-16-4.prob 0.23 8966 20 21
+FULL/selman-17-0.prob 3.98 192721 20 21
+FULL/selman-17-1.prob 0.04 281 23 23
+FULL/selman-17-2.prob 0.03 372 19 20
+FULL/selman-17-3.prob 0.09 3774 19 20
+FULL/selman-17-4.prob 10 -1
+FULL/selman-18-0.prob 10.03 -1
+FULL/selman-18-1.prob 0.03 500 18 19
+FULL/selman-18-2.prob 0.05 1021 19 20
+FULL/selman-18-3.prob 10.01 -1
+FULL/selman-18-4.prob 10.01 -1
+FULL/selman-19-0.prob 0.08 3206 19 20
+FULL/selman-19-1.prob 10.04 -1
+FULL/selman-19-2.prob 0.01 342 25 25
+FULL/selman-19-3.prob 10.01 -1
+FULL/selman-19-4.prob 10.02 -1
+FULL/selman-20-0.prob 0.31 14339 21 23
+FULL/selman-20-1.prob 10 -1
+FULL/selman-20-2.prob 10.01 -1
+FULL/selman-20-3.prob 0.1 1525 26 27
+FULL/selman-20-4.prob 0.05 481 28 28
+FULL/selman-21-0.prob 10.03 -1
+FULL/selman-21-1.prob 10.02 -1
+FULL/selman-21-2.prob 10.03 -1
+FULL/selman-21-3.prob 0.03 391 27 27
+FULL/selman-21-4.prob 10.01 -1
+FULL/selman-22-0.prob 0.06 473 28 28
+FULL/selman-22-1.prob 

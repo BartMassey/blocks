@@ -1,0 +1,13 @@
+In General:
+	different heuristics?
+	more problems?
+	better problems?
+	time / node?
+	split move?
+
+In Specific:
+	quad -> linear for above_correct()
+	incremental hash for A*
+
+Deferred:
+	shrink states by using char instead of int (who cares?)

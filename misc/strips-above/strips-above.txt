@@ -1,0 +1,17 @@
+move(x,y)
+  PRE: not above(*,x) and not above(*,y) and not source(*)
+  ADD: source(x), dest(y), examine(*), above(x,y)
+  DEL: above(x,*)
+
+assert-above(x,y,z)
+  PRE: source(x) and dest(y) and examine(z) and above(y,z)
+  ADD: above(x,z)
+  DEL: examine(z)
+
+deny-above(x,y,z)
+  PRE: source(x) and dest(y) and examine(z) and not above(y,z)
+  DEL: examine(z)
+
+finish-move(x,y)
+  PRE: source(x) and dest(y) and not examine(*)
+  DEL: source(x), dest(y)

@@ -1,0 +1,35 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(1244,1449)(0,-10)
+\path(722,612)(1122,612)(1122,212)
+	(722,212)(722,612)
+\put(867,357){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}A}}}}}
+\path(722,1012)(1122,1012)(1122,612)
+	(722,612)(722,1012)
+\put(867,757){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}C}}}}}
+\path(722,1412)(1122,1412)(1122,1012)
+	(722,1012)(722,1412)
+\put(867,1157){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}B}}}}}
+\path(1122,212)(922,12)
+\path(922,212)(722,12)
+\path(722,212)(522,12)
+\path(622,212)(422,12)
+\path(822,212)(622,12)
+\path(1022,212)(822,12)
+\path(1222,212)(1022,12)
+\path(522,212)(322,12)
+\path(422,212)(222,12)
+\path(322,212)(122,12)
+\path(222,212)(22,12)
+\path(1222,112)(1122,12)
+\path(122,212)(22,112)
+\path(22,212)(1222,212)
+\end{picture}
+}

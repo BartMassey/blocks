@@ -1,0 +1,35 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined%
+\gdef\SetFigFont#1#2#3#4#5{%
+  \reset@font\fontsize{#1}{#2pt}%
+  \fontfamily{#3}\fontseries{#4}\fontshape{#5}%
+  \selectfont}%
+\fi\endgroup%
+{\renewcommand{\dashlinestretch}{30}
+\begin{picture}(1236,1044)(0,-10)
+\path(718,1007)(1117,1007)(1117,609)
+	(718,609)(718,1007)
+\put(862,754){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}C}}}}}
+\path(1117,211)(917,12)
+\path(917,211)(718,12)
+\path(718,211)(518,12)
+\path(618,211)(420,12)
+\path(816,211)(618,12)
+\path(1016,211)(816,12)
+\path(1214,211)(1016,12)
+\path(518,211)(319,12)
+\path(420,211)(220,12)
+\path(319,211)(119,12)
+\path(220,211)(22,12)
+\path(1214,113)(1117,12)
+\path(119,211)(22,113)
+\path(22,211)(1214,211)
+\path(718,609)(1117,609)(1117,211)
+	(718,211)(718,609)
+\put(862,357){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}A}}}}}
+\path(119,609)(518,609)(518,211)
+	(119,211)(119,609)
+\put(265,357){\makebox(0,0)[lb]{\smash{{{\SetFigFont{11}{13.2}{\rmdefault}{\mddefault}{\updefault}B}}}}}
+\end{picture}
+}

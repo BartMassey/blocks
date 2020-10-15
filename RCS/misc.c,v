@@ -1,0 +1,121 @@
+head	1.4;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.4
+date	2003.05.21.09.09.04;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.21.02.50.18;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.07.02.43.34;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@OSish misc for blocks
+@
+
+
+1.4
+log
+@bring to 2003
+@
+text
+@#include <sys/time.h>
+#include <sys/resource.h>
+#include <signal.h>
+#include <unistd.h>
+#include "blocks.h"
+
+double cpu_secs(void) {
+  struct rusage ru;
+  
+  /* get user cpu */
+  if (getrusage(RUSAGE_SELF, &ru) < 0) {
+    perror("getrusage");
+    exit(-1);
+  }
+  return ru.ru_utime.tv_sec + ru.ru_utime.tv_usec / 1000000.0;
+}
+
+int getint(void) {
+  char buf[128];
+
+  fgets(buf, 128, stdin);
+  return atoi(buf);
+}
+
+/*ARGSUSED*/
+static void expired(int sig) {
+  timer_expired = 1;
+}
+
+void set_timer(int sec) {
+  struct itimerval it, oit;
+
+  it.it_interval.tv_sec = 0;
+  it.it_interval.tv_usec = 0;
+  it.it_value.tv_sec = sec;
+  it.it_value.tv_usec = 0;
+  if (signal(SIGVTALRM, expired) == SIG_ERR) {
+    perror("signal");
+    exit(-1);
+  }
+  if (setitimer(ITIMER_VIRTUAL, &it, &oit) == -1) {
+    perror("setitimer");
+    exit(-1);
+  }
+}
+@
+
+
+1.3
+log
+@declared setitimer()
+@
+text
+@d4 1
+a5 2
+extern int getrusage(int, struct rusage *);
+extern int setitimer(int, struct itimerval *, struct itimerval *);
+d21 1
+a21 1
+  gets(buf);
+d26 1
+a26 1
+static void expired(int sig, int code, struct sigcontext *scp, void *addr) {
+@
+
+
+1.2
+log
+@added time limit control
+@
+text
+@d6 1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 1
+d23 22
+@

@@ -1,0 +1,139 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.07.17.02.05.43;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@generic code for idastar variants
+@
+
+
+1.3
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@#include "blocks.h"
+#include "idaprotect.c"
+
+static int (*soln)[2];
+static int n_soln = 0;
+
+static void save_path(struct state *s, struct protect *p) {
+  int moved_block, moved_to;
+  
+  if (!p)
+    return;
+  backout_move(s, p);
+  moved_block = p->block;
+  moved_to = p->to;
+  save_path(s, p->parent);
+  soln[n_soln][0] = moved_block;
+  soln[n_soln][1] = moved_to;
+  n_soln++;
+}
+
+static int length(struct protect *p) {
+  int n = 0;
+
+  while(p) {
+    p = p->parent;
+    n++;
+  }
+  return n;
+}
+
+void ida_answer(struct state *g, struct protect *p) {
+  int i;
+  int n = length(p);
+  struct state *g0;
+  
+  /* print stats */
+  if (g->g_score != n)
+    abort();
+  soln = malloc(n * sizeof(soln[0]));
+  if (!soln) {
+    perror("malloc: soln");
+    exit(1);
+  }
+  g0 = clone_state(g);
+  save_path(g0, p);
+  if (verbose > 0) {
+    printf("solution:\n");
+    for(i = 0; i < n_soln; i++)
+      printf("move block %d to block %d\n", soln[i][0], soln[i][1]);
+  }
+  check_soln(n_soln, soln);
+  if (verbose > 0) {
+    printf("%g secs\n", cpu_secs());
+    printf("%d nodes\n",
+	   stat_nodes);
+    if (stat_decision_nodes >= 0)
+      printf("%d decision nodes\n", stat_decision_nodes);
+    printf("%d heuristic, %d actual\n\n", start->h_score, g->g_score);
+  } else {
+    if (stat_decision_nodes >= 0)
+      printf("%g %d %d %d %d\n",
+	     cpu_secs(), stat_nodes, stat_decision_nodes,
+	     start->h_score, g->g_score);
+    else
+      printf("%g %d %d %d\n",
+	     cpu_secs(), stat_nodes, 
+	     start->h_score, g->g_score);
+  }
+}
+@
+
+
+1.2
+log
+@add soundness check
+@
+text
+@d44 1
+a44 1
+  g0 = copy_state(g);
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d4 4
+a7 1
+static void write_path(struct state *s, struct protect *p) {
+d15 4
+a18 2
+  write_path(s, p->parent);
+  printf("%d %d\n", moved_block, moved_to);
+d32 4
+a35 1
+  g = copy_state(g);
+d37 1
+a37 1
+  if (g->g_score != length(p))
+d39 13
+a58 1
+    write_path(g, p);
+@

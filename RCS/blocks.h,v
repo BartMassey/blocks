@@ -1,0 +1,464 @@
+head	1.19;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.19
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.18;
+
+1.18
+date	96.07.17.02.05.43;	author bart;	state Exp;
+branches;
+next	1.17;
+
+1.17
+date	96.07.17.00.27.35;	author bart;	state Exp;
+branches;
+next	1.16;
+
+1.16
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	1.15;
+
+1.15
+date	96.07.15.21.35.09;	author bart;	state Exp;
+branches;
+next	1.14;
+
+1.14
+date	96.07.12.21.53.39;	author bart;	state Exp;
+branches;
+next	1.13;
+
+1.13
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	1.12;
+
+1.12
+date	96.02.28.00.51.07;	author bart;	state Exp;
+branches;
+next	1.11;
+
+1.11
+date	96.02.21.02.50.18;	author bart;	state Exp;
+branches;
+next	1.10;
+
+1.10
+date	96.02.09.02.35.17;	author bart;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	96.02.07.02.43.34;	author bart;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	96.02.07.02.24.55;	author bart;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	96.02.06.23.58.37;	author bart;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	96.02.06.02.12.25;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.02.05.23.52.28;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.02.02.13.55.31;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.02.13.16.53;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.01.31.20.56.25;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@interface for blocks
+@
+
+
+1.19
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@#include <stdio.h>
+#include "extern.h"
+
+#ifdef __GNUC__
+#define INLINE inline
+#else
+#define INLINE /*inline*/
+#endif
+
+#define ON_CORRECT(S,B) ((S)->blocks[(B)].on == goal->blocks[(B)].on)
+
+typedef signed char t_block;
+
+struct block {
+  t_block on;
+};
+
+#define HASH(I0,I1) ((((I0) ^ (I1)) << 16) | ((I0) << 8) | (I1))
+
+struct state {
+  struct block *blocks;
+  t_block *tower_tops;
+  t_block *tower_bottoms;
+  int n_towers;
+  int h_score, g_score, t_score;   /* heuristic, real, total */
+  int hash;
+  /* used only by a_star() */
+  struct state *parent;
+  int moved_block, moved_to;
+  struct statepq *q;
+};
+
+/* global state */
+extern int n_blocks;
+extern struct state *start, *saved_start, *goal;
+/* statistics */
+extern int stat_nodes;
+extern int stat_cached;
+extern int stat_open;
+extern int stat_max_open;
+extern int stat_max_g;
+extern int stat_min_h;
+extern int stat_decision_nodes;
+/* control */
+extern int verbose;
+extern int node_limit;
+extern int timer_expired;
+extern int fast_heuristic;
+extern int dumb_heuristic;
+
+/* misc.c */
+extern double cpu_secs(void);
+extern int getint(void);
+extern void set_timer(int);
+/* state.c */
+extern struct state *alloc_state(void);
+extern void free_state(struct state *);
+#define same_state(S1,S2) \
+  (((S1)->hash == (S2)->hash) && is_same_state((S1),(S2)))
+extern int is_same_state(struct state *, struct state *);
+extern struct state *clone_state(struct state *);
+extern struct state *copy_state(struct state *);
+/* score.c */
+extern void init_closure(void);
+extern int score_towertop(struct state *s, int t);
+extern void score_state(struct state *);
+extern void deluxe_score_state(struct state *);
+extern void dumb_score_state(struct state *);
+extern void move(struct state *, int, int);
+/* infra.c */
+extern void hash_state(struct state *);
+extern void read_problem(void);
+/* astar.c */
+extern int a_star(void);
+/* rastar.c */
+extern int ra_star(void);
+/* idastar.c */
+extern int ida_star(void);
+/* ridastar.c */
+extern int rida_star(void);
+/* statepq.c */
+/* state structure */
+struct statepq {
+  struct state *state;
+  int rank;  
+  struct statepq *l, *r;
+  int deleted;
+};
+/* Extract the value component of a node. */
+#define statepq_val(Q) ((Q)->state)
+extern struct statepq *statepq_new(void);
+extern struct statepq *statepq_insert(struct state *, struct statepq *);
+extern struct statepq *statepq_delmin(struct statepq *, struct state **);
+extern void statepq_delete(struct statepq *);
+extern struct statepq *statepq_merge(struct statepq *, struct statepq *);
+/* stateht.c */
+struct stateht_val {
+  struct state *s;
+  struct stateht_val *next;
+};
+struct stateht {
+  int h;
+  struct stateht_val *v;
+  struct stateht *l, *r;
+};
+extern struct stateht *stateht_new(void);
+extern struct stateht *stateht_insert(struct stateht *, struct state *);
+extern struct state **stateht_match(struct stateht *t, struct state *s);
+/* debug.c */
+extern void write_picture(struct state *);
+/* idastargen.c */
+/* for do-undo move buffering (for depth_first()) */
+struct protect {
+  int t_from, t_to;
+  int n_towers;
+  int block, from, to;
+  int h_score, g_score, t_score;
+  struct protect *parent;
+  int hash;
+  int last_top, last_bottom, from_bottom, to_bottom;
+};
+extern void ida_answer(struct state *, struct protect *);
+/* astargen.c */
+extern struct statepq *a_open;
+extern struct stateht *a_seen;
+extern void a_push_state(struct state *);
+extern void a_answer(struct state *);
+/* checksoln.c */
+extern void check_soln(int, int (*)[2]);
+@
+
+
+1.18
+log
+@add soundness check
+@
+text
+@d61 1
+@
+
+
+1.17
+log
+@some fixes for tower_bottoms
+@
+text
+@d35 1
+a35 1
+extern struct state *start, *goal;
+d127 2
+@
+
+
+1.16
+log
+@tower_bottom debugging
+code restructuring
+@
+text
+@d119 1
+a119 1
+  int last_top, last_bottom;
+@
+
+
+1.15
+log
+@fix statepq termination condition
+@
+text
+@a70 1
+extern struct state *read_state(void);
+a71 1
+extern void fix_bottoms(struct state *);
+d110 17
+@
+
+
+1.14
+log
+@dumb_heuristic
+@
+text
+@a91 2
+/* Is the pq empty? */
+#define statepq_isempty(Q) (!(Q))
+@
+
+
+1.13
+log
+@major revisions add deluxe scoring, restructured code
+@
+text
+@d49 1
+d67 1
+@
+
+
+1.12
+log
+@fixes to allow non-incremental heuristic at command line
+@
+text
+@d18 2
+d23 1
+d61 6
+a68 4
+extern int above_correct(struct state *, int);
+extern void score_state(struct state *);
+extern int score_towertop(struct state *s, int t);
+extern void move(struct state *, int, int);
+d71 1
+d110 2
+@
+
+
+1.11
+log
+@cut down state size by adding block_t
+@
+text
+@d45 1
+d61 1
+a61 1
+extern void score_state(struct state *, int);
+@
+
+
+1.10
+log
+@fixes for rastar
+@
+text
+@d12 2
+d15 1
+a15 1
+  int on;
+d20 1
+a20 1
+  int *tower_tops;
+d49 1
+@
+
+
+1.9
+log
+@added time limit control
+@
+text
+@d64 2
+@
+
+
+1.8
+log
+@added decision node count for rida
+@
+text
+@a40 1
+extern int ida;
+d42 1
+@
+
+
+1.7
+log
+@fix stateht_match() to return a state pointer, to allow replacement
+@
+text
+@d38 1
+@
+
+
+1.6
+log
+@add binary hash tree for seen
+@
+text
+@d96 1
+a96 1
+extern struct state *stateht_match(struct stateht *t, struct state *s);
+@
+
+
+1.5
+log
+@restructured some things and inlined some others
+@
+text
+@d21 1
+d25 1
+a25 2
+  struct state *q_next;  /* XXX will be superceded */
+  int hash;
+d84 13
+@
+
+
+1.4
+log
+@fixes to support hashing for same_state()
+@
+text
+@d49 3
+a51 1
+extern int same_state(struct state *, struct state *);
+d68 1
+d73 1
+d75 4
+a79 2
+extern int statepq_isempty(struct statepq *);
+extern struct state *statepq_val(struct statepq *);
+d81 2
+a82 2
+extern struct state *statepq_min(struct statepq *);
+extern struct statepq *statepq_delmin(struct statepq *);
+@
+
+
+1.3
+log
+@changes to support efficient PQ for a_star() open list
+@
+text
+@d21 1
+d24 2
+a25 1
+  struct state *q_next;   /* used only by a_star() */
+d52 1
+@
+
+
+1.2
+log
+@changes to support rida_star()
+@
+text
+@d62 13
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d52 1
+d60 2
+@

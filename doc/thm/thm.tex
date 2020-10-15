@@ -1,0 +1,320 @@
+\documentclass{article}
+\usepackage{theorem}
+
+\DeclareMathAlphabet{\mathsc}{OT1}{cmr}{m}{sc}
+
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\have}{{.~}}
+\newcommand{\bstate}{{\mathcal{S}}}
+\newcommand{\blocks}{{\mathcal{B}}}
+\newcommand{\tabtop}{{\mathsc{t}}}
+\newcommand{\tblocks}{{\blocks_\tabtop}}
+\newcommand{\bclear}{{\mathsc{clear}}}
+\newcommand{\bon}{{\mathsc{on}}}
+\newcommand{\babove}{{\mathsc{above}}}
+\newcommand{\bstack}{{\mathsc{stack}}}
+\newcommand{\bbase}{{\mathsc{base}}}
+\newcommand{\bflexed}{{\mathsc{flexed}}}
+\newcommand{\st}{~|}
+
+\begin{document}
+
+\section{Definitions}
+
+\begin{itemize}
+\item Let
+  $$ \blocks = \{ 1, \ldots, N \} $$
+represent a set of $N$ blocks in a blocks-world problem.
+We represent the table top with the symbol $\tabtop$, and
+define $$ \tblocks \equiv \blocks \cup \{ \tabtop \} $$
+  
+\item Call any 
+  $$ \bstate \subseteq \blocks \times \tblocks $$
+a {\em part-state} of the blocks-world problem. The pairs of blocks in
+$\bstate$ represent {\em on} relations.
+
+\item A part-state $\bstate$ is {\em legal} iff
+  \begin{itemize}
+  \item No block is on two things. $$
+    \forall i \in \blocks \have
+      \langle i , j \rangle \in \bstate \implies
+      \not\exists j' \in \tblocks \have
+	j \neq j' \wedge \langle i , j' \rangle \in \bstate
+  $$
+  \item No two blocks are on the same block. $$
+    \forall j \in \blocks \have
+      \langle i , j \rangle \in \bstate \implies
+      \not\exists i' \in \blocks \have
+	i \neq i' \wedge \langle i' , j \rangle \in \bstate
+  $$
+  \end{itemize}
+
+\item Define the partial functions
+$\bon_i(\bstate)$ mapping legal part-states to
+blocks such that
+$\bon_i(\bstate) = j$ when $\langle i, j \rangle \in \bstate$;
+$\bon_i$ is undefined elsewhere.
+(In other words, $\bon_i$ says
+which block block $i$ is on in a given state.)
+By the definition of a legal part-state, these functions are well-defined.
+
+\item A part-state is a {\em total state} or just a {\em state}
+iff it is legal and every block is on something. $$
+    \forall i \in \blocks \have
+      \exists j \in \tblocks \have
+	\langle i , j \rangle \in \bstate
+$$
+
+\item The {\em above} relation is the transitive closure of
+the {\em on} relation: A block $i$ is above a block $j$ in a
+legal part-state $\bstate$ if either $i$ is on $j$, or $i$ is on
+a block which is above $j$.  $$
+  \babove_i(\bstate) = \left \{ \begin{array}{ll}
+    \{ j \} \cup \babove_j(\bstate) &
+      j = \bon_i(\bstate) \wedge j \neq \tabtop \\
+    \emptyset & \mbox{otherwise}
+  \end{array} \right .
+$$
+
+\item A block $j$ is {\em clear} in a legal part-state $\bstate$ iff no block
+is above it. $$
+  \bclear(\bstate) = \{ j \in \bstate \st
+  \not\exists i \have \langle i , j \rangle \in \bstate \}
+$$
+
+\item A legal part-state $\bstate$ is {\em realizable} iff
+no block is above itself. $$
+  \not\exists i \in \blocks \have
+    i \in \babove_i(\bstate)
+$$
+
+\item {\em Moves} are functions $m_{ij}$ which take a realizable part-state in
+which blocks $i$ and $j$ are clear to a
+realizable part-state in which $i$ is on $j$.
+
+Let $i \in \blocks$ and $j \in \tblocks$, and let $\mathcal{C}_{ij}$ be the set
+of realizable part-states
+in which $i$ is clear, and either $j = \tabtop$ or $j$ is clear.
+Then the domain of $m_{ij}$ is
+$\mathcal{C}_{ij}$, and the range is the set of all realizable part-states.
+
+We define the partial function $m_{ij}$ by $$
+  m_{ij}(\bstate) \equiv
+    \left ( \bstate - \{ \langle i, \bon_i(\bstate) \rangle \} \right )
+    \cup \{ \langle i, j \rangle \}
+$$
+when $i$ and $j$ are clear in $\bstate$; $m_{ij}$ is undefined
+elsewhere.  A move is {\em legal} iff $m_{ij}$ is defined.
+
+\item A {\em move sequence} $M$
+of length $k$ from state $\bstate^1$ to state $\bstate^2$ consists of
+a sequence of pairs $$
+  \langle i_1, j_1 \rangle , \langle i_2 , j_2 \rangle , \ldots ,
+  \langle i_k , j_k \rangle \in \left ( \blocks \times \tblocks \right ) ^ \ast
+$$
+such that $$
+  \left ( m_{i_k j_k} \circ \cdots \circ m_{i_2 j_2} \circ
+  m_{i_1 j_1} \right ) (\bstate^1) = \bstate^2
+$$
+We allow ourselves the liberty of writing $M(\bstate^1) = \bstate^2$.
+A move sequence $M$ is {\em legal} for a state $\bstate$ iff
+$M(\bstate)$ is defined.
+
+\item A {\em primitive-blocks-world} (PBW) {\em problem} consists of two
+realizable states: an
+initial state $I$ and a goal state $G$.
+A {\em solution} to the problem is a move sequence $M$ such that $M(I) = G$.
+We say that a solution is {\em optimal} if there is no solution
+of shorter length.
+
+\item A {\em stack} of blocks starting at $i$ in a
+legal part-state $\bstate$ is just
+$i$ plus the set of blocks $i$ is above. $$
+  \bstack_i(\bstate) = \{ i \} \cup \babove_i(\bstate)
+$$
+We call $i$ the {\em top} of the stack.
+If $\bstate$ is a realizable part-state, the {\em base}
+of the stack is the block in the stack which is
+above no other blocks in the stack. $$
+  \bbase_i(\bstate) = j \in \bstack_i(\bstate) \have
+    \babove_j(\bstate) \subseteq \{ \tabtop \}
+$$
+(The lemma that every stack in any realizable part state
+has a base is proved by tracing through the definitions.)
+
+\item A {\em tower} is a stack which is a subset of no other
+stack.  
+
+\end{itemize}
+
+\section{Basics}
+
+We first prove that two states are the same exactly when
+all the blocks have the same $\babove$ relation.
+\begin{lemma}{same-above}{$\babove$ As A State Characterization}
+\given
+States $\bstate^1$ and $\bstate^2$.
+\prove
+$\bstate^1 = \bstate^2$ iff $$
+  \forall i \in \blocks \have
+    \babove_i(\bstate^1) = \babove_i(\bstate^2)
+$$
+\proof  By forward and backward implication.
+
+\forwardcase
+By definition, $\babove$ is a function.  Thus, 
+$\babove_i$ applied to any identical pair of states
+must yield identical answers.
+
+\backwardcase
+We prove this case by contradiction.
+Assume that $\bstate^1 = \bstate^2$, but there is some $i$ such that
+$\babove_i(\bstate^1) \not= \babove_i(\bstate^2)$.
+WLOG, assume that 
+there is some $j \in \tblocks$
+such that $j \in \babove_i(\bstate^1)$ but not $j \in \babove_i(\bstate^2)$.
+Then by definition of $\babove$, there must exist some
+$k \in i \cup \babove_i(\bstate^1)$
+such that $\bon_k(\bstate^1) = j$ but $\bon_k(\bstate^2) \not= j$.
+But by definition of $\bon$, this implies that $\bstate^1 \not= \bstate^2$,
+contradicting our original assumption.
+\end{lemma}
+
+\section{Flexibility}
+
+A legal part-state $\bstate^2$ is {\em as flexible} as
+a legal part-state $\bstate^1$ iff no block in $\bstate^2$
+is above some block in $\bstate^2$ which it is not above in
+$\bstate^1$, i.e. $$
+  \babove_i (\bstate^2) \subseteq \babove_i(\bstate^1)
+$$
+We notate this by writing $\bstate^2 \sqsubseteq \bstate^1$.
+
+An observation about states related by flexibility is in order.
+\begin{lemma}{flexible-clear}{Flexibility And Clear Blocks}
+\given
+States $\bstate^1$ and $\bstate^2$ with $\bstate^2 \sqsubseteq \bstate^1$.
+\prove
+Any block clear in $\bstate^1$ is clear in $\bstate^2$: $$
+  \bclear(\bstate^2) \supseteq \bclear(\bstate^1)
+$$
+\proof
+Consider some block $j$ in $\bstate^2$.  If it is not clear,
+then there is a block $i$ above it in $\bstate^2$.  But,
+by definition of flexibility, this means that $i$ is above $j$
+in $\bstate^1$, so $j$ is not clear in $\bstate^1$, either.
+\end{lemma}
+
+We now justify the terminology ``as flexible as''
+by means of Theorem \ref{flexible-move}:
+\begin{theorem}{flexible-move}{Flexibility And Move Sequences}
+\given
+States $\bstate^1$ and $\bstate^2$ with $\bstate^2 \sqsubseteq \bstate^1$.
+A legal move sequence $M$ starting at $\bstate^1$.
+\prove
+\begin{description}
+\item[i)~] $M$ is also a legal move sequence starting at $\bstate^2$.
+\item[ii)~] $M(\bstate^2) \sqsubseteq M(\bstate^1)$.
+\end{description}
+\proof
+By induction on prefixes of $M$.
+
+\basecase
+The theorem is true for the empty prefix of $M$.
+
+\indcase
+Decompose $M$ such that the prefix $M^1$ before
+some move $m = \langle i, j \rangle$ satisfies the lemma $$
+  M = M^1 \cdot \langle i, j \rangle \cdot M^2
+$$
+and let
+\begin{eqnarray*}
+  \bstate^1_1 &=& M^1(\bstate^1) \\
+  \bstate^1_2 &=& \langle i, j \rangle(\bstate^1_1) \\
+  \bstate^2_1 &=& M^1(\bstate^2) \\
+  \bstate^2_2 &=& \langle i, j \rangle(\bstate^2_1)
+\end{eqnarray*}
+
+By hypothesis we have $\bstate^2_1 \sqsubseteq \bstate^1_1$.
+By Lemma \ref{flexible-clear}, this means that $$
+  \bclear(\bstate^1_1) \subseteq \bclear(\bstate^2_1)
+$$
+This means that since $\langle i, j \rangle$ is a legal
+move in $\bstate^1_1$, it must also be a legal move in
+$\bstate^2_1$.  Thus, condition (i) of the lemma holds
+for the prefix $M^1 \cdot \langle i, j \rangle$ of $M$.
+
+To see that condition (ii) of the Lemma holds on the extended
+prefix, we note that the only block possibly above other blocks in
+$\bstate^2_2$ but not in $\bstate^2_1$ is $i$.  We then note that
+by definition of flexibility
+\begin{eqnarray*}
+  \babove_i(\bstate^2_2) &=& \babove_j(\bstate^2_1) \cup \{j\} \\
+  &\subseteq& \babove_j(\bstate^1_1) \cup \{j\} \\
+  &=& \babove_i(\bstate^1_2)
+\end{eqnarray*}
+\end{theorem}
+
+If two states are related by flexibility, legal sequences of
+moves tend to make the two states the same.  The next theorem
+quantifies this observation.
+
+Given a block $i$ and states $\bstate$ and $\bstate'$ such
+that $\bstate' \sqsubseteq \bstate$, we will say that block
+$i$ is {\em flexed} iff $i$ is above fewer blocks in
+$\bstate'$ than in $bstate$. $$
+  \babove_i(\bstate') \subset \babove_i(\bstate)
+$$
+We will write $\bflexed_{\bstate}(\bstate')$ for the
+set of blocks in $\bstate'$ flexed with respect to $\bstate$.
+
+\begin{theorem}{flexed-blocks}{Flexed Blocks}
+\given States $\bstate^1_1$ and $\bstate^2_1$ such that
+$\bstate^1_1 \sqsubseteq \bstate^2_1$.  A
+move sequence $M$ such that $M(\bstate^1_1) = \bstate^1_2$
+and $M(\bstate^2_1) = M(\bstate^2_2)$.
+\prove
+The final states are the same whenever all the flexed blocks
+in the initial state have moved, i.e.,
+$\bstate^2_1 = \bstate^2_2$ iff $$
+  \forall i \in \bflexed_{\bstate^2_1}(\bstate^1_1) \have
+    \exists j \in \tblocks \have
+      \langle i, j \rangle \in M
+$$
+\proof  By forward and backward implication.
+
+\forwardcase
+We first prove that when the final states are the same, all
+flexed blocks have moved.
+By Lemma \ref{same-above} two states are the same exactly when the
+$\babove$ relations of all of their blocks are the same.
+Now consider any block $i$ 
+which is flexed in a state $\bstate^1$ WRT a state $\bstate^1_1$. $$
+  i \in \bflexed_{\bstate^1_1}(\bstate^1)
+$$
+Assume that a sequence $M$ of moves takes both
+initial states $\bstate^1$ and $\bstate^1_1$
+to the same final state $\bstate^2$. $$
+  \bstate^2 = M(\bstate^1) = M(\bstate^1_1)
+$$
+By the definition of flexed
+block, the $\babove$ relation of $i$ in the
+more flexible initial state $\bstate^1$ was a subset
+of that in the less flexible initial state $\bstate^1_1$. $$
+   \babove_i(\bstate^1) \subset \babove_i(\bstate^1_1)
+$$
+Since the final
+states are the same at the end of the sequence of moves, then
+the sequence of moves must have changed the $\babove_i$ relation
+WRT at least one of the initial states $\bstate^1$ and $\bstate^1_1$.
+But, by definition of $\babove_i$, this can happen only if block $i$ moves.
+
+\backwardcase
+We next prove that when all flexed blocks have moved, the states are
+identical.  We prove this case by induction.
+
+\end{theorem}
+  
+\section{Solution Optimization}
+
+\end{document}

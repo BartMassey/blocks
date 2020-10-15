@@ -1,0 +1,145 @@
+head	1.3;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.3
+date	96.02.06.23.58.10;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.06.18.04.21;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.02.06.02.12.25;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@binary hash trees for blocks
+@
+
+
+1.3
+log
+@fix stateht_match() to return a state pointer, to allow replacement
+@
+text
+@#include "blocks.h"
+
+/*
+ * binary search tree
+ * keyed on state hash value
+ * Bart Massey 2/96
+ */
+
+struct stateht *stateht_new(void) {
+  return 0;
+}
+
+static INLINE void insert_val(struct stateht *t, struct state *s) {
+  struct stateht_val *v;
+  
+  v = malloc(sizeof(*v));
+  if (!v) {
+    perror("malloc (new_val)");
+    exit(-1);
+  }
+  v->s = s;
+  v->next = t->v;
+  t->v = v;
+}
+
+struct stateht *stateht_insert(struct stateht *t, struct state *s) {
+  struct stateht *t0, *t1;
+  int h = s->hash;
+
+  t0 = 0;
+  t1 = t;
+  while (t1) {
+    t0 = t1;
+    if (h < t1->h) {
+      t1 = t1->l;
+      continue;
+    }
+    if (h > t1->h) {
+      t1 = t1->r;
+      continue;
+    }
+    insert_val(t, s);
+    return t;
+  }
+  t1 = malloc(sizeof(*t1));
+  if (!t1) {
+    perror("malloc (stateht_insert)");
+    exit(-1);
+  }
+  t1->h = h;
+  t1->l = 0;
+  t1->r = 0;
+  t1->v = 0;
+  insert_val(t1, s);
+  if (!t0)
+    return t1;
+  if (h < t0->h)
+    t0->l = t1;
+  else
+    t0->r = t1;
+  return t;
+}
+
+struct state **stateht_match(struct stateht *t, struct state *s) {
+  struct stateht_val *v;
+  int h = s->hash;
+
+  while (t) {
+    if (h < t->h) {
+      t = t->l;
+      continue;
+    }
+    if (h > t->h) {
+      t = t->r;
+      continue;
+    }
+    for (v = t->v; v; v = v->next)
+      if (same_state(v->s, s))
+	return &v->s;
+    return 0;
+  }
+  return 0;
+}
+@
+
+
+1.2
+log
+@fixed bad bug in tree construction/search
+@
+text
+@d64 1
+a64 1
+struct state *stateht_match(struct stateht *t, struct state *s) {
+d79 1
+a79 1
+	return v->s;
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d38 1
+a38 1
+    if (h < t1->h) {
+d73 1
+a73 1
+    if (h < t->h) {
+@

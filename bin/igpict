@@ -1,0 +1,44 @@
+#!/bin/sh
+TMP=/tmp/pic.$$
+TMP1=/tmp/pic1.$$
+TMP2=/tmp/pic2.$$
+trap "rm -f $TMP $TMP1 $TMP2" 0 1 2 3 15
+
+cat > $TMP
+awk '
+NR==1 {
+  print $0
+  next
+}
+/^$/ {
+  sect++
+  init = 1
+  next
+}
+sect==1 {
+  if (init)
+    print ""
+  init = 0
+  print $0
+  next
+}' < $TMP > $TMP1
+awk '
+NR==1 {
+  print $0
+  next
+}
+/^$/ {
+  sect++
+  init = 1
+  next
+}
+sect==2 {
+  if (init)
+    print ""
+  init = 0
+  print $0
+  next
+}' < $TMP > $TMP2
+picture < $TMP1
+echo ""
+picture < $TMP2

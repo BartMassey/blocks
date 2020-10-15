@@ -1,0 +1,97 @@
+\documentclass{article}
+
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\have}{{.~}}
+\newcommand{\bstate}{{\mbox{\cal S}}}
+\newcommand{\blocks}{{\mbox{\cal B}}}
+\newcommand{\tabtop}{{\mbox{\sc t}}}
+\newcommand{\tblocks}{{\blocks_\tabtop}}
+
+\begin{document}
+
+\section{Preliminaries}
+
+\begin{itemize}
+\item Let
+  $$ \blocks = \{ 1 \ldots N \} $$
+represent a set of $N$ blocks in a blocks-world problem.
+We represent the tabletop with the symbol $\tabtop$, and
+let
+  $$ \tblocks = \blocks \cup \{ \tabtop \} $$
+  
+\item Call any 
+  $$ \bstate \subseteq \blocks \times \tblocks $$
+a {\em state} of the blocks-world problem. The pairs of blocks in
+$\bstate$ represent {\em on} relations.
+
+\item A state $\bstate$ is {\em legal} iff
+  \begin{itemize}
+  \item  Every block is on something: $$
+    \forall i \in \blocks \have
+      \exists j \in \tblocks \have
+	\langle i , j \rangle \in \bstate
+  $$
+  \item No block is on two things: $$
+    \forall i \in \blocks \have
+      \langle i , j \rangle \in \bstate \implies
+      \not \exists j' \in \tblocks \have
+	j \neq j' \wedge \langle i , j' \rangle \in \bstate
+  $$
+  \item No two blocks are on the same block: $$
+    \forall j \in \blocks \have
+      \langle i , j \rangle \in \bstate \implies
+      \not \exists i' \in \blocks \have
+	i \neq i' \wedge \langle i' , j \rangle \in \bstate
+  $$
+  \end{itemize}
+  
+\item A block $j$ is {\em clear} in a legal state $\bstate$ iff no block is above it:
+  $$ \not \exists i \in \blocks \have \langle i , j \rangle \in \bstate $$
+
+\item A block $i$ is {\em above} a block $i'$ in a legal
+state $\bstate$ if there is a sequence
+of blocks whose {\em on} relationships lead from $i$ to $i'$: $$
+  \exists \{ j_1 , j_2 , \ldots , j_k \} \subseteq \blocks \have
+    \{ \langle i , j_1 \rangle , \langle j_1 , j_2 \rangle ,
+       \ldots , \langle j_k , i' \rangle \} \subseteq \bstate
+$$
+
+\item A legal state $\bstate$ is {\em realizable} iff no block
+is above itself.
+
+\item {\em Moves} are functions $m_{ij}$ which take a realizable state in
+which blocks $i$ and $j$ are clear to a
+realizable state in which $i$ is on $j$.
+
+Let $i \in \blocks$ and $j \in \tblocks$, and let $C(ij)$ be the set
+of realizable states
+in which $i$ is clear, and either $j = \tabtop$ or $j$ is clear.
+Then the domain of $m_{ij}$ is
+$C(ij)$, and the range is the set of realizable states.
+Define the functions $\theta_i(\bstate)$ mapping legal states to
+blocks to have the value $j$
+such that $\langle i, j \rangle \in \bstate$.
+By the definition of a legal state, these functions are well-defined.
+We then define
+$m_{ij}$ by $$
+  m_{ij}(\bstate) =
+    \left ( \bstate - \{ \langle i, \theta_i(\bstate) \rangle \} \right )
+    \cup \{ \langle i, j \rangle \}
+$$
+
+\item A blocks world {\em problem} consists of two realizable states: an
+initial state $I$ and a goal state $G$.  A {\em solution} consists of
+a sequence of pairs $$
+  \langle i_1, j_1 \rangle , \langle i_2 , j_2 \rangle , \ldots ,
+  \langle i_k , j_k \rangle \in \left ( \blocks \times \tblocks \right ) ^ \ast
+$$
+such that $$
+  \left ( m_{i_k j_k} \circ \cdots \circ m_{i_2 j_2} \circ
+  m_{i_1 j_1} \right ) (I) = G
+$$
+\end{itemize}
+
+\section{Move Restriction}
+
+
+\end{document}

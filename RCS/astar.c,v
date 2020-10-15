@@ -1,0 +1,439 @@
+head	1.10;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.10
+date	96.07.16.02.50.11;	author bart;	state Exp;
+branches;
+next	1.9;
+
+1.9
+date	96.07.16.02.00.28;	author bart;	state Exp;
+branches;
+next	1.8;
+
+1.8
+date	96.07.15.21.35.09;	author bart;	state Exp;
+branches;
+next	1.7;
+
+1.7
+date	96.07.12.21.53.39;	author bart;	state Exp;
+branches;
+next	1.6;
+
+1.6
+date	96.02.06.23.58.55;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	96.02.06.02.12.25;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.02.05.23.51.42;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.02.02.14.12.34;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.02.02.13.16.53;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.01.30.01.51.30;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@A* search for blocks
+@
+
+
+1.10
+log
+@make h max g min debug msgs less prevalent
+@
+text
+@#include "blocks.h"
+
+int a_star(void) {
+  struct state *s, *s0;
+  int i, j;
+
+  a_open = statepq_new();
+  a_seen = stateht_new();
+  a_push_state(start);
+  while (1) {
+    a_open = statepq_delmin(a_open, &s);
+    if (!s)
+      break;
+    if (verbose > 8) {
+      printf("consider state\n");
+      write_picture(s);
+      if (verbose > 9)
+        printf("heuristic distance %d\n", s->h_score);
+    }
+    if (same_state(s, goal)) {
+      a_answer(s);
+      return 0;
+    }
+    --stat_open;
+    if (verbose > 5 && s->g_score > stat_max_g) {
+      stat_max_g = s->g_score;
+      printf("g max now %d\n", stat_max_g);
+    }
+    if (verbose > 5 && s->h_score < stat_min_h) {
+      stat_min_h = s->h_score;
+      printf("h min now %d\n", stat_min_h);
+    }
+    /* try tabletop moves first */
+    for (i = 0; i < s->n_towers; i++)
+      if (s->blocks[s->tower_tops[i]].on > -1) {
+	s0 = copy_state(s);
+	move(s0, i, -1);
+	a_push_state(s0);
+      }
+    /* then try tower-to-tower */
+    for (i = 0; i < s->n_towers; i++)
+      for (j = 0; j < s->n_towers; j++)
+	if (i != j) {
+	  s0 = copy_state(s);
+	  move(s0, i, j);
+	  a_push_state(s0);
+	}
+  }
+  printf("no solution!\n");
+  return -1;
+}
+  
+@
+
+
+1.9
+log
+@tower_bottom debugging
+code restructuring
+@
+text
+@d25 1
+a25 1
+    if (verbose > 1 && s->g_score > stat_max_g) {
+d29 1
+a29 1
+    if (verbose > 1 && s->h_score < stat_min_h) {
+@
+
+
+1.8
+log
+@fix termination condition
+@
+text
+@a2 72
+static struct statepq *open;
+static struct stateht *seen;
+
+static void push_state(struct state *s) {
+  struct state **sp;
+  
+  /* deal with duplicates */
+  sp = stateht_match(seen, s);
+  if (sp) {
+    struct state *s0 = *sp;
+    
+    if (s->g_score >= s0->g_score) {
+      free_state (s);
+      return;
+    }
+    if (s0->q) {
+      statepq_delete(s0->q);
+    } else {
+      stat_open++;
+      if (stat_open > stat_max_open)
+	stat_max_open=stat_open;
+    }
+    statepq_insert(s, open);
+    *sp = s;
+    free_state(s0);
+    return;
+  }
+  /* update stats */
+  stat_cached++;
+  stat_open++;
+  if (stat_open > stat_max_open)
+    stat_max_open=stat_open;
+  /* insert in appropriate places */
+  open = statepq_insert(s, open);
+  seen = stateht_insert(seen, s);
+}
+
+static void a_star_write_path(struct state *sp) {
+  if (!sp->parent)
+    return;
+  a_star_write_path(sp->parent);
+  printf("%d %d\n", sp->moved_block, sp->moved_to);
+}
+
+static int a_star_length(struct state *g) {
+  int n = 0;
+  struct state *sp;
+
+  for (sp = g; sp->parent; sp = sp->parent)
+    n++;
+  return n;
+}
+
+
+static void a_star_answer(struct state *g) {
+  /* print stats */
+  if (g->g_score != a_star_length(g))
+    abort();
+  if (verbose > 0) {
+    printf("%g secs\n", cpu_secs());
+    printf("%d nodes, %d cached, %d max open\n",
+	   stat_nodes, stat_cached, stat_max_open);
+    printf("%d heuristic, %d actual\n\n", start->h_score, g->g_score);
+    a_star_write_path(g);
+  } else {
+    printf("%g %d %d %d %d %d\n",
+	   cpu_secs(),
+	   stat_nodes, stat_cached, stat_max_open,
+	   start->h_score, g->g_score);
+  }
+}
+
+d7 3
+a9 3
+  open = statepq_new();
+  seen = stateht_new();
+  push_state(start);
+d11 1
+a11 1
+    open = statepq_delmin(open, &s);
+d21 1
+a21 1
+      a_star_answer(s);
+d38 1
+a38 1
+	push_state(s0);
+d46 1
+a46 1
+	  push_state(s0);
+@
+
+
+1.7
+log
+@more debugging code
+@
+text
+@d82 1
+a82 1
+  while (!statepq_isempty(open)) {
+d84 2
+@
+
+
+1.6
+log
+@fixed some bugs and memory leaks in the dup case of push_state()
+@
+text
+@d84 6
+@
+
+
+1.5
+log
+@add binary hash tree for seen
+@
+text
+@d7 1
+a7 1
+  struct state *s0;
+d10 5
+a14 3
+  s0 = stateht_match(seen, s);
+  if (s0) {
+    if (!s0->q || s->g_score >= s0->g_score) {
+d18 1
+a18 1
+    if (s->g_score < s0->g_score) {
+d20 4
+a23 2
+      free(s0);
+      statepq_insert(s, open);
+d25 4
+@
+
+
+1.4
+log
+@added explicit priority queue for open list
+fixed bad bug involving reprioritizing nodes
+@
+text
+@d4 1
+a4 1
+static struct state *closed = 0;
+d6 1
+a6 3
+static struct statepq *stack[100000];
+static int duplicate_in_open(struct statepq *q, struct state *s) {
+  int sp = 0;
+d8 1
+a8 25
+
+  stack[sp++] = q;
+  while (sp) {
+    if (sp >= 100000)
+      abort();
+    q = stack[--sp];
+    while (q) {
+      if (same_state(s, (s0 = statepq_val(q)))) {
+	if (s->g_score < s0->g_score) {
+	  statepq_delete(q);
+	  free(s0);
+	  statepq_insert(s, open);
+	}
+        return 1;
+      }
+      stack[sp++] = q->r;
+      q = q->l;
+    }
+  }
+  return 0;
+}
+
+static void push_state(struct state *s) {
+  struct state *qp;
+
+d10 3
+a12 2
+  for (qp = closed; qp; qp = qp->q_next)
+    if (same_state(s, qp)) {
+d16 6
+a21 2
+  if (duplicate_in_open(open, s))
+    return;
+d27 1
+a27 1
+  /* insert in appropriate place */
+d29 1
+d72 1
+a88 2
+    s->q_next = closed;
+    closed = s;
+@
+
+
+1.3
+log
+@sped up checking hack
+@
+text
+@a5 17
+static int duplicate_state(struct state *s, struct state *qs) {
+  if (same_state(s, qs)) {
+    if (s->g_score < qs->g_score) {
+      /* copy relevant state for new path */
+      qs->g_score = s->g_score;  /* XXX reprioritize */
+      qs->t_score = s->t_score;
+      qs->moved_block = s->moved_block;
+      qs->moved_to = s->moved_to;
+      qs->parent = s->parent;
+    }
+    free_state (s);
+    return 1;
+  }
+  return 0;
+}
+
+/* XXX temporary hack */
+d9 1
+d13 2
+d17 6
+a22 1
+      if (duplicate_state(s, statepq_val(q)))
+d24 3
+a26 2
+      stack[sp++] = q->l;
+      q = q->r;
+d37 2
+a38 1
+    if (duplicate_state(s, qp))
+d40 1
+d93 2
+a94 1
+  while ((s = statepq_min(open))) {
+a98 1
+    open = statepq_delmin(open);
+@
+
+
+1.2
+log
+@changes to support efficient PQ for a_star() open list
+@
+text
+@d23 1
+d25 13
+a37 3
+  return q && (duplicate_state(s, statepq_val(q))
+	       || duplicate_in_open(q->l, s)
+	       || duplicate_in_open(q->r, s));
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d3 2
+a4 1
+static struct state *open, *closed;
+d10 1
+a10 1
+      qs->g_score = s->g_score;
+d22 7
+d30 1
+a30 1
+  struct state *qp, **qfp;
+d36 2
+a37 3
+  for (qp = open; qp; qp = qp->q_next)
+    if (duplicate_state(s, qp))
+      return;
+d44 1
+a44 9
+  qfp = &open;
+  for (qp = open; qp; qp = qp->q_next) {
+    if (qp->t_score > s->t_score ||
+	(qp->t_score == s->t_score && qp->h_score > s->h_score))
+      break;
+    qfp = &qp->q_next;
+  }
+  s->q_next = qp;
+  *qfp = s;
+d86 1
+d88 1
+a88 2
+  while (open) {
+    s = open;
+d93 1
+a93 1
+    open = open->q_next;
+@

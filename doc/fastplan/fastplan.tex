@@ -1,0 +1,358 @@
+\documentclass{article}
+\usepackage{epic}
+\usepackage{eepic}
+
+\title{Efficient Planning In Simple Cases:\\
+Lessons From The Blocks World}
+
+\author{Bart Massey}
+
+\date{June 12, 1995}
+
+\newcommand{\sbw}{{\em primitive-blocks-world}}
+\newcommand{\astar}{{$\mbox{A}^{\!\mbox{\tt *}}$}}
+\newcommand{\idastar}{{$\mbox{IDA}^{\!\mbox{\tt *}}$}}
+\newcommand{\bigO}{{\cal O}}
+
+\begin{document}
+\maketitle
+
+\section{Introduction}
+\label{section-introduction}
+
+In the 20 years since Winograd's seminal thesis on natural language
+understanding \cite{winograd-phd,winograd-book},
+AI researchers have focused a lot of attention on simplified
+versions of the simple planning domain he employed, the
+``blocks world''.  The version of this domain with which
+we will be concerned is that which
+Gupta and Nau \cite{gupta-nau} refer to as \sbw{}.
+The initial and final states of a planning
+problem are stacks of uniquely labeled blocks on a table, and the planning
+problem consists of finding a sequence of move operations which
+takes the initial state to the final state.  The move
+operations are restricted to move only the topmost block in a
+stack, and only atop another topmost block or the table.
+
+Currently, the author has implemented a special-purpose planner
+which finds shortest solutions to \sbw{} planning problems.  This
+is the fastest optimal \sbw{} planner known to the author, routinely
+solving ``hard'' random 40 block problems.  This shows that
+reasonable special-purpose heuristics for \sbw{} do a very good job of
+minimizing the constant factors involved in \sbw{} planning.
+One could draw one of several further hypotheses:
+\begin{enumerate}
+\item[1)]
+This speedup is uninteresting, since special-purpose planners
+are {\em always} faster than general-purpose planners.  The speedups
+undoubtedly come entirely from problem-specific data structures and
+heuristics which will utterly fail to generalize.
+\item[2)]
+This speedup shows that \sbw{} is not a good domain to test
+general-purpose planning methods.  The fact that special-purpose
+techniques do so much better indicates that the domain is {\em too}
+simple to give much validity to general-purpose planning results.
+\item[3)]
+This speedup is a consequence of the simplicity of the domain,
+and thus suitable generalizations of the planner should work well
+in other simple domains.
+\item[4)]
+This speedup is a consequence of a well-implemented good algorithm for
+general-purpose planning, and thus a proper generalization of
+the planner should work well in most any domain.
+\end{enumerate}
+Historical evidence indicates that (4) is unlikely.
+(1) and (2)
+are effectively null hypotheses
+for the experiments the author proposes to perform, which involve
+exploring (3).
+
+The remainder of this document outlines the author's plan for
+exploration of hypothesis (3) above.
+\begin{description}
+\item[Section \ref{section-sbw-techniques}]
+describes the techniques responsible for the
+good performance of the existing \sbw{}
+planning engine.
+\item[Section \ref{section-not-generalizable}]
+outlines the argument against performing the proposed experiment.
+\item[Section \ref{section-proposal}]
+describes the properties of the proposed experimental system.
+\item[Section \ref{section-subgoals}]
+describes some specific tasks to be accomplished.
+\item[Section \ref{section-conclusion}]
+draws some conclusions about the proposed experiments.
+\end{description}
+
+\section{Keys To Speeding Up \sbw{}}
+\label{section-sbw-techniques}
+
+There are several techniques which combine to give such good
+performance in the author's optimal \sbw{} planner.  Among these
+are
+\begin{description}
+\item[1)]
+The planner is written in {\sc C}.  Careful profiling and
+bottleneck removal have been repeatedly applied to the inner loop
+of a simple algorithm (\astar{} or \idastar{} \cite{ginsberg-astar}
+on arbitrary directed graphs).
+The current algorithm is capable of exploring
+between 5,000 and 10,000 nodes per second in its inner loop,
+which is respectable performance for a search engine.
+It is notable that other successful implementations of algorithms which
+were historically thought to be computationally infeasible, such
+as Crawford's {\sc Tableau} \cite{tableaux} and
+Selman's {\sc GSAT} \cite{GSAT}, have
+applied essentially this same methodology.
+
+\item[2)]
+The state description used in the implementation was 
+deliberately made as simple as possible without sacrificing
+performance.  A minimal set of fluents necessary to describe
+the state (an ``on'' relationship for each block)
+was chosen, and the only redundant fluents added (a ``topmost'' block
+for each tower, and a count of towers) reduced the computational
+complexity of a number of heuristics without apparently adding
+significant computational cost in the general case.  The resulting
+state description is small, which means that many states can be cached.
+It is also cheap to manipulate, which helps the inner loop performance.
+
+\item[3)]
+Reasonably modern implementations of key data structures
+required by the \astar{} search algorithm keep
+the per-node computational complexity of the search low.
+The list of visited nodes 
+is implemented as a balanced binary search tree keyed
+on a state hash (and should be implemented
+as a self-adjusting binary search tree \cite{tarjan-sabst}).
+The priority queue of unvisited nodes is implemented as
+a binomial heap \cite{cormen-heaps}
+(and should be implemented as a Fibonacci
+heap \cite{cormen-heaps}---the
+potential performance gain here is considerable).
+
+\item[4)]
+The optimization problem for \sbw{} has an interesting property
+noted by Gupta and Nau \cite{gupta-nau}, namely that it is never
+necessary to move a block onto a tower unless that block is never
+to move again after this.  The \sbw{} planner automatically prunes
+such moves, resulting in substantial performance savings.
+
+\item[5)]
+In \sbw{} there are distinguished
+states (``deadlock states'') such that a set of moves taking one such state
+to another can be made in virtually any order.  Exploring
+all possible orderings of these moves unsurprisingly consumes
+significant amounts of time in the search, since the astar algorithm
+will consider them all before backtracking over the initial
+distinguished state.  The planner has a heuristic which selects
+these moves in a canonical order via a polytime (actually $\bigO(n)$)
+method, greatly speeding the search.  This technique is related
+to one used e.g., in {\sc Graphplan} \cite{blum-furst}.
+
+\item[6)]
+The \astar{} scoring heuristic (underestimate of the distance from the
+current state to the goal state) used in the planner is
+very domain-specific and relatively accurate.
+However, it does have an important
+but potentially generalizable property, namely that 
+it is careful not to decrease the \astar{} heuristic score in situations
+where no real progress has been made.
+
+\begin{figure}
+\centering
+\input{false-progress-a.eepic}
+\caption{The Sussman Test}
+\label{false-progress-a}
+\end{figure}
+
+\begin{figure}
+\centering
+\input{false-progress-b.eepic}
+\caption{Failing The Sussman Test}
+\label{false-progress-b}
+\end{figure}
+
+Consider the ``Sussman Anomaly'' situation of Figure
+\ref{false-progress-a}, where the goal is to make a single
+stack of blocks in alphabetical order.  The move to the
+situation of Figure \ref{false-progress-b} looks superficially
+promising; more fluents are correct after the move than
+before.  However, it is clear from inspection that, in order
+to reach the goal state, this move must be undone.  Thus, it
+would be a mistake for the score to decrease.  In general it
+may sometimes be possible to identify this sort of ``local
+minimum'' and score accordingly.
+\end{description}
+
+\section{A Critical View Of Generalizability}
+\label{section-not-generalizable}
+
+In considering the key features of the planner as described in
+Section \ref{section-sbw-techniques}, it becomes clear that
+they condense into two classes.  A critic of the author's proposed
+work has noted that both classes are problematic.  The paraphrase
+of those comments here is intended only to point up the potential
+pitfalls in the proposal.
+
+About techniques (1)--(3), the critic says
+\begin{quote}
+This is exactly what people were doing in 1970.  It
+may produce better numbers, but it will not {\em scale} any better
+than it did then.
+\end{quote}
+These techniques are known
+to be workable, and to provide very good speedups by constant
+or polynomial factors.  While these speedups are important,
+they do not in any way address scalability.  However, the author
+believes these
+techniques are still useful in two ways.
+First, by allowing the planner to explore a larger
+problem space, they provide a better picture of the
+true complexity of the space and the asymptotically limiting factors.
+Second, by allowing the planner to solve some realistic small problems,
+they allow a demonstration of the advantages and disadvantages of the
+planning approach.
+
+About techniques (4)--(6), the critic says
+\begin{quote}
+There are no reasonable generalizations of these ideas,
+short of solving the planning problem outright.  If either
+of these techniques could be extended to general planning, then
+none of the rest of the proposed work would matter.
+\end{quote}
+These techniques are known to be very difficult to apply or
+understand in general, and no one knows how to use them to
+solve the planning problem.  However, it seems reasonable to
+expect that, when used in a heuristic fashion, they might
+provide good speedups in a number of common cases, and be relatively
+inexpensive.  Thus, to the extent that they will generalize, they
+may be very helpful in speeding up an already fast planning engine.
+
+\section{A Proposal}
+\label{section-proposal}
+
+Having looked at the current \sbw{} planning system, at ways
+in which it might extend, and at some possible pitfalls, it is
+now time to propose an actual implementation, and at the
+experiments that might be performed using this implementation.
+Consider each of the elements of Section \ref{section-sbw-techniques},
+and the ways they might be implemented in a general-purpose planner:
+\begin{description}
+\item[1--3)]
+The current implementation of \astar{} with states as vectors
+of integer-valued fluents should be retained.  Careful consideration
+is required in choosing additional information to be cached
+along with the states.  Too much redundant information leads to
+serious problems of state access modification speed and of correct preservation of
+invariants.  Too little redundant information might slow performance.
+The fundamental rule here is surely to not cache things until we see
+that they are needed by (4) or (5).
+
+\item[4)]
+One way to preserve the heuristic properties of the \sbw{} planner
+in a general-purpose planner is to consider states achievable
+by plans originating from the current state, where a state should
+be viewed as a set of fluent values.
+If we could efficiently compute the reflexive transitive closure of
+plan steps, giving a set of
+possible states reachable from a given state, or even if we could
+compute 
+sound approximations and complete approximations to this set,
+we could make use of the following
+property:  If two states have the
+property that the set of reachable states from one
+is a superset of the set of reachable states from the
+other, the weaker state may be pruned.
+This would account for the fact that the \sbw{} heuristic
+potentially prunes some optimal plans merely because they
+may be more difficult to find.
+
+\item[5)]
+The author hopes, perhaps optimistically, that some kind
+of notion of interchangeability of plan steps can be
+developed which will lend itself to the exploitation
+of symmetry in general plan search.  The
+fact that sequences of moves can often be performed in an arbitrary order
+suggests to the author that some sort of automatic macro operator
+construction might be useful, constructing generalized plan steps which
+perform common subgoals.  However, this is all currently very vague.
+Much more thought is needed here.
+
+\item[6)]
+The notion of Hamming distance between states ({\em i.e.},
+the number of fluents which must change to transform one
+state to another) is by itself probably insufficient to produce
+good heuristic scoring.  One way to improve this scoring would
+be to plan with some automatically weakened set of plan operators,
+thus producing admissible scores without as much planning effort.
+
+Some notion of local changes in score is also probably important
+to good scoring. The fact that the minimum of some globally
+admissible score and some locally accurate score must be used
+does not seem to always inhibit local scoring adjustments.
+
+\end{description}
+
+Finally, it is worth noting that \astar{} was chosen for the
+\sbw{} planner only because it was a simple algorithm which
+produced optimal answers reasonably efficiently; this was important
+for comparing our planner with another optimal \sbw{} planner.
+Other search techniques, optimal and non-optimal, should
+be tested as well.
+
+\section{Some Subgoals}
+\label{section-subgoals}
+
+Having sketched the kind of experiments which should be performed,
+it might pay to look at the sequence of events the author believes
+is appropriate for the ensuing investigation.
+\begin{enumerate}
+\item 
+A really good version of the blocks-world planner should
+be finished, if only for completeness' sake.  It is sincerely believed that
+this will take only a couple of days of further effort.
+\item
+The planner should be generalized to accept and manipulate
+arbitrary ``{\sc STRIPS} style'' \cite{fikes-nilsson}
+planning operator and state descriptions.
+Heuristics and optimizations specific to \sbw{} should be
+removed.  The result should be a locally efficient ({\em i.e.}, tight
+inner loop) but globally inefficient ({\em i.e.}, bad asymptotic
+performance) general-purpose planner using \astar{} search.
+This should take a couple of weeks.
+\item
+Search techniques other than \astar{} and \idastar{} should be
+tried.  In particular, the advantages and disadvantages of finding
+non-optimal plans via more efficient search algorithms should be determined.
+\item
+The sorts of optimizations discussed under points (4), (5), and
+(6) of Section \ref{section-proposal} should be designed and implemented.
+This is deliberately open-ended, as the results of early experiments
+will to a large extent determine the approach.
+\item
+Having settled on a set of techniques to be used, and having proved
+that these techniques are effective, implement a ``production version''
+of the general-purpose planner, publish the results, and distribute
+the code.
+\end{enumerate}
+
+It is acknowledged that this is a vague and sketchy plan.  At this
+stage, little else is possible.  There are many potential pitfalls,
+and only time will tell which can be avoided.  Indeed, it is possible
+that a few days' or a few weeks' work will show that this whole
+line of research should be abandoned.  It is simply too early to tell.
+
+\section{Conclusion}
+\label{section-conclusion}
+
+The author has built a fast optimal planner for \sbw{}.  It is quite
+possible that this will lead to fast planning in more general domains.
+The reasons for this expectation, the case against it, some ideas for
+how to meet it, and some steps to take to achieve it, have all been
+outlined.  Now, only the work remains.
+
+\bibliographystyle{plain}
+\bibliography{fastplan,tania-planning}
+
+\end{document}

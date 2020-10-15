@@ -1,0 +1,54 @@
+3:
+        0.1 real         0.0 user         0.0 sys  
+13 nodes, 10 cached, 7 max open
+4:
+        0.1 real         0.0 user         0.0 sys  
+33 nodes, 24 cached, 19 max open
+5:
+        0.2 real         0.0 user         0.0 sys  
+67 nodes, 50 cached, 43 max open
+6:
+        0.1 real         0.0 user         0.0 sys  
+119 nodes, 92 cached, 83 max open
+7:
+        0.1 real         0.0 user         0.0 sys  
+193 nodes, 154 cached, 143 max open
+8:
+        0.2 real         0.0 user         0.1 sys  
+293 nodes, 240 cached, 227 max open
+9:
+        0.2 real         0.1 user         0.1 sys  
+423 nodes, 354 cached, 339 max open
+10:
+        0.4 real         0.2 user         0.1 sys  
+587 nodes, 500 cached, 483 max open
+11:
+        0.6 real         0.4 user         0.1 sys  
+789 nodes, 682 cached, 663 max open
+12:
+        1.0 real         0.8 user         0.0 sys  
+1033 nodes, 904 cached, 883 max open
+13:
+        2.3 real         1.5 user         0.0 sys  
+1323 nodes, 1170 cached, 1147 max open
+14:
+        2.9 real         2.5 user         0.1 sys  
+1663 nodes, 1484 cached, 1459 max open
+15:
+        3.4 real         3.2 user         0.1 sys  
+2057 nodes, 1850 cached, 1823 max open
+16:
+        5.8 real         5.1 user         0.2 sys  
+2509 nodes, 2272 cached, 2243 max open
+17:
+        8.4 real         7.8 user         0.3 sys  
+3023 nodes, 2754 cached, 2723 max open
+18:
+       12.2 real        11.6 user         0.2 sys  
+3603 nodes, 3300 cached, 3267 max open
+19:
+       20.2 real        17.3 user         0.2 sys  
+4253 nodes, 3914 cached, 3879 max open
+20:
+       28.6 real        23.9 user         0.3 sys  
+4977 nodes, 4600 cached, 4563 max open

@@ -1,0 +1,33 @@
+#!/bin/awk -f
+BEGIN {
+  blocknm = "ABCDEFGHIJKLMNOPQRSUVWXYZ"
+}
+/^$/ {
+  mode++
+  i = 0
+  next
+}
+mode==0 {
+  n = $1
+  next
+}
+mode==1 {
+  if (i == 0)
+    printf "//initial-state:\n"
+  i++
+  if ($1 == -1)
+    printf "on(%s,T)\n", substr(blocknm, i, 1)
+  else
+    printf "on(%s,%s)\n", substr(blocknm, i, 1), substr(blocknm, $1 + 1, 1)
+  next
+}
+mode==2 {
+  if (i == 0)
+    printf "//goal-state:\n"
+  i++
+  if ($1 == -1)
+    printf "on(%s,T)\n", substr(blocknm, i, 1)
+  else
+    printf "on(%s,%s)\n", substr(blocknm, i, 1), substr(blocknm, $1 + 1, 1)
+  next
+}

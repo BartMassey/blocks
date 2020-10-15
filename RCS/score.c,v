@@ -1,0 +1,465 @@
+head	1.6;
+access;
+symbols;
+locks; strict;
+comment	@ * @;
+
+
+1.6
+date	2003.05.21.09.33.19;	author bart;	state Exp;
+branches;
+next	1.5;
+
+1.5
+date	2003.05.21.09.09.04;	author bart;	state Exp;
+branches;
+next	1.4;
+
+1.4
+date	96.07.17.23.12.40;	author bart;	state Exp;
+branches;
+next	1.3;
+
+1.3
+date	96.07.16.02.17.42;	author bart;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	96.07.12.21.53.39;	author bart;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	96.07.03.01.13.49;	author bart;	state Exp;
+branches;
+next	;
+
+
+desc
+@heuristic scoring and state move for blocks
+@
+
+
+1.6
+log
+@hush GCC whining
+@
+text
+@#include "blocks.h"
+
+static char **aig;   /* above in goal */
+
+void init_closure(void) {
+    int n = n_blocks;
+    int i, j, k;
+
+    aig = (char **) malloc(n * sizeof(aig[0]));
+    if (!aig) {
+	perror("aig: malloc");
+	exit(-1);
+    }
+    for (i = 0; i < n; i++) {
+	aig[i] = (char *) malloc(n);
+        if (!aig[i]) {
+	    perror("aig: malloc");
+	    exit(-1);
+        }
+	for (j = 0; j < n; j++)
+	    aig[i][j] = (goal->blocks[i].on == j);
+    }
+    for (k = 0; k < n; k++)
+	for (i = 0; i < n; i++)
+	    if (aig[i][k])
+		for (j = 0; j < n; j++)
+		    if (aig[k][j] && !aig[i][j])
+			aig[i][j] = 1;
+    if (verbose > 7) {
+        printf("aig:\n");
+	printf("  ");
+	for (i = 0; i < n_blocks; i++)
+	    printf(" %02d", i);
+	printf("\n");
+	for (i = 0; i < n_blocks; i++) {
+	    printf("%02d", i);
+	    for (j = 0; j < n_blocks; j++)
+		printf(" %01d ", aig[j][i]);
+	    printf("\n");
+	}
+    }
+}
+
+void score_state(struct state *s) {
+  int i, b, c;
+  int h = 0;
+  
+  for (i = 0; i < s->n_towers; i++)
+    for (b = s->tower_tops[i]; b != s->tower_bottoms[i]; b = s->blocks[b].on) {
+      h++;
+      for (c = b; c != -1; c = s->blocks[c].on)
+	if (aig[b][c]) {
+	  h++;
+	  break;
+	}
+    }
+  s->h_score = h;
+}
+
+#if 0
+
+int *marks = 0;
+
+static int delete_cycle(int i,
+			int nb,	struct state *s,
+			int *nnb, struct state **ns) {
+  for (i = 0; i < 
+}
+
+static int score_cycles(int nb, struct state *s) {
+  int nt = s->n_towers;
+  struct state *ns = 0;
+  int nnb;
+  
+  if (nb <= 0)
+    return 0;
+  for (i = 0; i < s->n_towers; i++)
+    if (delete_cycle(i, nb, s, &nnb, &ns))
+      break;
+  if (!ns)
+    return 0;
+  return 1 + score_cycles(nnb, ns);
+}
+			 
+void deluxe_score_state(struct state *s) {
+  int nb = n_blocks;
+  int nt = s->n_towers;
+  int h, i, j;
+
+  if (!marks) {
+    marks = malloc(nb * sizeof(marks[0]));
+    if (!marks) {
+	perror("malloc: deluxe_score_state: marks");
+	exit(-1);
+    }
+  }
+  for (i = 0; i < nb; i++)
+    marks[i] = 0;
+  h = 0;
+  for (i = 0; i < nt; i++) {
+    t_block b;
+    t_block bottom = s->tower_bottoms[i];
+    
+    for (b = s->tower_tops[i]; b != bottom; b = s->blocks[b].on)
+      h++;
+  }
+  for (i = 0; i < nt; i++) {
+    t_block b;
+    t_block bottom = s->tower_bottoms[i];
+    
+    for (b = s->tower_tops[i]; b != bottom; b = s->blocks[b].on)
+      h++;
+  }
+  s->h_score = h + score_cycles(nb, clone_state(s));
+}
+#else
+void deluxe_score_state(struct state *s) {
+  score_state(s);
+}
+#endif
+
+void dumb_score_state(struct state *s) {
+  int i;
+  int t = n_blocks;
+
+  for(i = 0; i < n_blocks; i++)
+    t -= (s->blocks[i].on == goal->blocks[i].on);
+  s->h_score = t;
+}
+
+int score_towertop(struct state *s, int t) {
+  int b;
+  int bt = s->tower_tops[t];
+  
+  if (bt == s->tower_bottoms[t])
+    return 0;
+  for (b = s->blocks[bt].on; b != -1; b = s->blocks[b].on)
+    if (aig[bt][b])
+      return 2;
+  return 1;
+}
+
+void move(struct state *s, int t_from, int t_to) {
+  int block, from, to;
+  int old_tt_score = 0;  /* XXX init to hush gcc */
+
+  /* debugging, checks, and stats */
+  stat_nodes++;
+  if (node_limit && stat_nodes > node_limit) {
+    if (verbose > 0)
+      printf("Node limit %d exceeded after %g secs\n", node_limit, cpu_secs());
+    else
+      printf("%g %d\n", cpu_secs(), -1);
+    exit(-1);
+  }
+  if (timer_expired) {
+    if (verbose > 0)
+      printf("Time limit exceeded after %g secs\n", cpu_secs());
+    else
+      printf("%g %d\n", cpu_secs(), -1);
+    exit(-1);
+  }
+  /* get some invariants, check some assertions */
+  block = s->tower_tops[t_from];
+  from = s->blocks[block].on;
+  if (t_from == -1)
+    abort();
+  if (from == -1 && t_to == -1)
+    abort();
+  if (t_to == t_from)
+    abort();
+  if (t_to > -1)
+    to = s->tower_tops[t_to];
+  else
+    to = -1;
+  /* more debugging, some scoring */
+  if (verbose > 8) {
+    printf("move block %d from tower %d onto block %d on tower %d\n",
+	   block, t_from, to, t_to);
+    write_picture(s);
+  }
+  if (dumb_heuristic)
+    s->h_score += (from == goal->blocks[block].on);
+  else if (fast_heuristic)
+    old_tt_score = score_towertop(s, t_from);
+  /* fix up source tower */
+  if (from > -1) {
+    if (s->tower_bottoms[t_from] == block)
+      s->tower_bottoms[t_from] = from;
+    s->tower_tops[t_from] = from;
+  } else {
+    --s->n_towers;
+    s->tower_tops[t_from] = s->tower_tops[s->n_towers];
+    s->tower_bottoms[t_from] = s->tower_bottoms[s->n_towers];
+    if (t_to == s->n_towers)
+      t_to = t_from;
+  }
+  /* fix up destination tower */
+  if (t_to == -1) {
+    t_to = s->n_towers++;
+    s->tower_bottoms[t_to] = -1;
+  }
+  if (goal->blocks[block].on == to && s->tower_bottoms[t_to] == to)
+    s->tower_bottoms[t_to] = block;
+  s->tower_tops[t_to] = block;
+  /* finish the move */
+  s->hash += HASH(block, to) - HASH(block, s->blocks[block].on);
+  s->blocks[block].on = to;
+  /* more scoring, statistics */
+  if (dumb_heuristic)
+    s->h_score -= (to == goal->blocks[block].on);
+  else if (fast_heuristic)
+    s->h_score += score_towertop(s, t_to) - old_tt_score;
+  else
+    deluxe_score_state(s);
+  s->g_score++;
+  s->t_score = s->g_score + s->h_score;
+  s->moved_block = block;
+  s->moved_to = to;
+  /* diagnostics */
+  if (verbose > 8) {
+    printf("\n");
+    write_picture(s);
+    printf("moved block %d from tower %d onto block %d on tower %d\n",
+	   block, t_from, to, t_to);
+  }
+}
+
+@
+
+
+1.5
+log
+@bring to 2003
+@
+text
+@d145 1
+a145 1
+  int old_tt_score;
+@
+
+
+1.4
+log
+@restructured move()
+fixed copy_state() bug
+@
+text
+@d61 24
+a84 3
+#define MARK_DEAD 1
+#define MARK_STACKED 2
+#define MARK_DONE 4
+d86 3
+a88 2
+  int n = n_blocks;
+  static int *marks = 0;
+d91 1
+a91 1
+    marks = malloc(n * sizeof(marks[0]));
+d97 1
+a97 1
+  for (i = 0; i < n; i++)
+a98 4
+  /*
+   * Delete bogus up and down edges.
+   * Count must-move blocks.
+   */
+d100 3
+a102 3
+  for (i = 0; i < s->n_towers; i++) {
+    t_block b, bb;
+    t_block badb = -1;
+d104 1
+a104 7
+    for (b = s->tower_tops[i]; b > -1; b = s->blocks[b].on)
+      if (!ON_CORRECT(s, b))
+	badb = b;
+    if (badb == -1)
+      continue;
+    bb = s->blocks[badb].on;
+    for (b = s->tower_tops[i]; b != bb; b = s->blocks[b].on)
+a105 7
+    while (bb > -1) {
+      down_edges[bb] = -1;
+      b = s->blocks[bb].on;
+      if (b > -1)
+        up_edges[b] = -1;
+      bb = b;
+    }
+d107 3
+a109 4
+  /* computer tower_tops[] hint */
+  for (i = 0; i < s->n_towers; i++) {
+    t_block b = s->tower_tops[i];
+    t_block bb = s->blocks[b].on;
+d111 2
+a112 2
+    if (bb > -1 && up_edges[bb])
+      tower_tops[n_tops++] = b;
+d114 1
+a114 2
+  /* set the score */
+  s->h_score = h + score_graph(n, up_edges, down_edges, n_tops, tower_tops);
+@
+
+
+1.3
+log
+@better debugging
+@
+text
+@d142 1
+a142 1
+  int old_tt_score, new_tt_score;
+d144 1
+d160 3
+a162 1
+  /* get some invariants */
+a164 2
+  block = s->tower_tops[t_from];
+  from = s->blocks[block].on;
+d167 2
+a168 1
+  to = -1;
+d171 3
+a178 1
+  /* do some initial scoring */
+d183 1
+a183 22
+  /* fix up destination */
+  s->hash += HASH(block, to) - HASH(block, s->blocks[block].on);
+  s->blocks[block].on = to;
+  if (t_to > -1) {
+    int tblock = s->tower_tops[t_to];
+    
+    if (goal->blocks[block].on == tblock && s->tower_bottoms[t_to] == tblock)
+      s->tower_bottoms[t_to] = block;
+    s->tower_tops[t_to] = block;
+    if (!dumb_heuristic && fast_heuristic)
+      new_tt_score = score_towertop(s, t_to);
+  } else {
+    if (goal->blocks[block].on == -1)
+      s->tower_bottoms[s->n_towers] = block;
+    else
+      s->tower_bottoms[s->n_towers] = -1;
+    s->tower_tops[s->n_towers] = block;
+    s->n_towers++;
+    if (!dumb_heuristic && fast_heuristic)
+      new_tt_score = score_towertop(s, s->n_towers - 1);
+  }
+  /* fix up source */
+d185 1
+a185 1
+    if (s->tower_tops[t_from] == s->tower_bottoms[t_from])
+d192 2
+d195 8
+d204 3
+d210 1
+a210 1
+    s->h_score += new_tt_score - old_tt_score;
+@
+
+
+1.2
+log
+@more debugging code
+@
+text
+@d29 13
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d9 1
+a9 1
+    aig = (char **) malloc(n_blocks);
+d14 2
+a15 2
+    for(i = 0; i < n; i++) {
+	aig[i] = (char *) malloc(n_blocks);
+d20 1
+a20 1
+	for(j = 0; j < n; j++)
+d23 2
+a24 2
+    for(k = 0; k < n; k++)
+	for(i = 0; i < n; i++)
+d26 1
+a26 1
+		for(j = 0; j < n; j++)
+d106 9
+a145 4
+  if (verbose > 8) {
+    printf("move %d to %d\n", t_from, t_to);
+    write_picture(s);
+  }
+d156 9
+a164 1
+  if (fast_heuristic)
+d175 1
+a175 1
+    if (fast_heuristic)
+d184 1
+a184 1
+    if (fast_heuristic)
+d198 3
+a200 1
+  if (fast_heuristic)
+d212 2
+a213 1
+    printf("moved %d to %d\n", t_from, t_to);
+@
